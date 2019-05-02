@@ -1,1 +1,2 @@
 # scooterLovers
+Discord Test
