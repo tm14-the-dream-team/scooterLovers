@@ -55,7 +55,7 @@ public class RegistrationActivity extends AppCompatActivity {
         String email = userEmail.getText().toString();
         String pass = userPass.getText().toString();
         if (email.isEmpty() && pass.isEmpty()) {
-            Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter all information", Toast.LENGTH_SHORT).show();
         }
         else {
             result = true;
