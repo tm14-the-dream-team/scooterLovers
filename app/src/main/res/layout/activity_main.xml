@@ -52,4 +52,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/Login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="launchMap"
+        android:text="Login"
+        tools:layout_editor_absoluteX="267dp"
+        tools:layout_editor_absoluteY="224dp" />
+
 </android.support.constraint.ConstraintLayout>
