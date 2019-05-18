@@ -18,4 +18,10 @@ public class MainActivity extends AppCompatActivity {
         Intent launchMap = new Intent(this, Map.class);
         startActivity(launchMap);
     }
+
+    protected void launchRegistration(View view) {
+        System.out.println("IT WORKED");
+        Intent launchRegistration = new Intent(this, RegistrationActivity.class);
+        startActivity(launchRegistration);
+    }
 }
