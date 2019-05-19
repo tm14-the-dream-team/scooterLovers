@@ -25,6 +25,15 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
     }
 
 
+    /*
+    *  On press of back button exit the app
+    */
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+    }
+
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
