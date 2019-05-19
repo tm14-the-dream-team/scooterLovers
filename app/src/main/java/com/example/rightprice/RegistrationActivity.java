@@ -58,10 +58,14 @@ public class RegistrationActivity extends AppCompatActivity {
                                         FirebaseUser user = mAuth.getCurrentUser();
                                         startActivity(new Intent(RegistrationActivity.this, Map.class));
                                         finish();
-                                    } else {
+                                    } else if (task.getException().getMessage() == "The email address is badly formatted."){
                                         // If sign in fails, display a message to the user.
                                         Log.w("SignInFailed", "createUserWithEmail:failure", task.getException());
-                                        Toast.makeText(RegistrationActivity.this, "User already exists.",
+                                        Toast.makeText(RegistrationActivity.this, "Email address is invalid." ,
+                                                Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Log.w("SignInFailed", "createUserWithEmail:failure", task.getException());
+                                        Toast.makeText(RegistrationActivity.this, "" + task.getException().getMessage(),
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -99,9 +103,11 @@ public class RegistrationActivity extends AppCompatActivity {
         String pass = userPass.getText().toString();
         String cPass = confirmPass.getText().toString();
         if (email.isEmpty() && pass.isEmpty() && cPass.isEmpty()) {
-            Toast.makeText(this, "Please enter all information", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter all information.", Toast.LENGTH_SHORT).show();
         }
-        else {
+        else if (pass.equals(cPass) == false) {
+            Toast.makeText(this, "Passwords do not match.", Toast.LENGTH_SHORT).show();
+        } else {
             result = true;
         }
         return result;
