@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private EditText userEmail, userPass;
+    private EditText userEmail, userPass, confirmPass;
     private Button regButton;
     private TextView userLogin;
 
@@ -47,6 +47,7 @@ public class RegistrationActivity extends AppCompatActivity {
         userPass = (EditText)findViewById(R.id.password);
         regButton = (Button)findViewById(R.id.btnRegister);
         userLogin = (TextView)findViewById(R.id.userLogin);
+        confirmPass = (EditText)findViewById(R.id.confirmPass);
     }
 
     //Show an error message if info is left blank
@@ -54,8 +55,9 @@ public class RegistrationActivity extends AppCompatActivity {
         Boolean result = false;
         String email = userEmail.getText().toString();
         String pass = userPass.getText().toString();
-        if (email.isEmpty() && pass.isEmpty()) {
-            Toast.makeText(this, "Please enter all information", Toast.LENGTH_SHORT).show();
+        String cPass = confirmPass.getText().toString();
+        if (email.isEmpty() && pass.isEmpty() && cPass.isEmpty()) {
+            Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show();
         }
         else {
             result = true;
