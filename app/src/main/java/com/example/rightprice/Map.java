@@ -1,7 +1,7 @@
 package com.example.rightprice;
 
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -14,7 +14,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
-
 
     private GoogleMap mMap;
     private ImageButton settingsButton;
@@ -34,40 +33,32 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         filterButton = (ImageButton) findViewById(R.id.filter_button);
         servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
         servicesLayer.setVisibility(View.INVISIBLE);
-        filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
-        filterOptionsLayer.setVisibility(View.INVISIBLE);
-
-
-        settingsButton.setOnClickListener(new View.OnClickListener()
-        {
+        /*
+         * When pressing the Settings Button
+         */
+        settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick (View v){
-                if (servicesLayer.getVisibility() == View.VISIBLE) {
+            public void onClick(View v){
+                if (servicesLayer.getVisibility()==View.VISIBLE) {
                     servicesLayer.setVisibility(View.INVISIBLE);
                 } else {
                     servicesLayer.setVisibility(View.VISIBLE);
                 }
             }
         });
-
-        filterButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick (View v){
-                if (filterOptionsLayer.getVisibility() == View.VISIBLE) {
-                    filterOptionsLayer.setVisibility(View.INVISIBLE);
-                } else {
-                    filterOptionsLayer.setVisibility(View.VISIBLE);
-                }
+        filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
+        filterOptionsLayer.setVisibility(View.INVISIBLE);
+        filterButton.setOnClickListener(new View.OnClickListener(){
+           @Override
+            public void onClick(View v) {
+               if (filterOptionsLayer.getVisibility() == View.VISIBLE) {
+                   filterOptionsLayer.setVisibility(View.INVISIBLE);
+               } else {
+                   filterOptionsLayer.setVisibility(View.VISIBLE);
+               }
             }
         });
-
     }
-
-    /*
-     * When pressing the Settings Button
-     */
-
 
 
     /*
