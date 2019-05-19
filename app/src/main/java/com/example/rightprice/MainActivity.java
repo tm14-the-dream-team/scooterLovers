@@ -1,13 +1,61 @@
 package com.example.rightprice;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.google.firebase.auth.FirebaseUser;
-
 public class MainActivity extends AppCompatActivity {
+    private boolean birdToggle;
+    private boolean limeToggle;
+    private boolean spinToggle;
+    private double maxPrice = 20;
+    private boolean bikeToggle;
+    private boolean scooToggle;
+
+    public void birdToggle(){
+        birdToggle = !birdToggle;
+    }
+
+    public void birdToggle(boolean b){
+        birdToggle = b;
+    }
+
+    public void limeToggle(){
+        limeToggle = !limeToggle;
+    }
+
+    public void limeToggle(boolean b){
+        limeToggle = b;
+    }
+
+    public void spinToggle(){
+        spinToggle = !spinToggle;
+    }
+
+    public void spinToggle(boolean b){
+        spinToggle = b;
+    }
+
+    public void bikeToggle(){
+        bikeToggle = !bikeToggle;
+    }
+
+    public void bikeToggle(boolean b){
+        bikeToggle = b;
+    }
+
+    public void scooToggle(){
+        scooToggle = !scooToggle;
+    }
+
+    public void scooToggle(boolean b){
+        scooToggle = b;
+    }
+
+    public void setMaxPrice(double num){
+        maxPrice = num;
+    }
 
 /*    @Override
     public void onStart() {
