@@ -16,7 +16,28 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Bird extends Service {
+public class Bird extends Service{
+    private boolean login = false;
+    private String email = "";
+    private double ratePerMin = 0.3;
+    private double rateUnlock = 1;
+
+    public void loginToggle(){
+        login = !login;
+    }
+
+    public void loginToggle(boolean b){
+        login = b;
+    }
+
+    public void setEmail(String str){
+        email = str;
+    }
+
+    public void setrpm(double rate){
+        ratePerMin = rate;
+    }
+
     public JsonObjectRequest getInitReq() {
         return initReq;
     }
@@ -67,9 +88,5 @@ public class Bird extends Service {
                 return headers;
             }
         };
-
-
-
-
     }
 }
