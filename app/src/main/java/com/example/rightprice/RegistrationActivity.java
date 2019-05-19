@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private EditText userEmail, userPass, confirmPass;
+    private EditText userEmail, userPass;
     private Button regButton;
     private TextView userLogin;
     private DatabaseReference mDatabase;
@@ -81,14 +81,13 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
     }
-
+D
     //links variables to the content ID's
     private void setupUIViews() {
         userEmail = (EditText)findViewById(R.id.userEmail);
         userPass = (EditText)findViewById(R.id.password);
         regButton = (Button)findViewById(R.id.btnRegister);
         userLogin = (TextView)findViewById(R.id.userLogin);
-        confirmPass = (EditText)findViewById(R.id.confirmPass);
     }
 
     //Show an error message if info is left blank
@@ -96,9 +95,8 @@ public class RegistrationActivity extends AppCompatActivity {
         Boolean result = false;
         String email = userEmail.getText().toString();
         String pass = userPass.getText().toString();
-        String cPass = confirmPass.getText().toString();
-        if (email.isEmpty() && pass.isEmpty() && cPass.isEmpty()) {
-            Toast.makeText(this, "Please enter all details", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() && pass.isEmpty()) {
+            Toast.makeText(this, "Please enter all information", Toast.LENGTH_SHORT).show();
         }
         else {
             result = true;
