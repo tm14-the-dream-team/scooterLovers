@@ -19,6 +19,9 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private ImageButton settingsButton;
     private ImageButton filterButton;
+    private Button birdButton;
+    private Button limeButton;
+    private Button spinButton;
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
     private Button logoutButton;
@@ -33,6 +36,9 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
         settingsButton = (ImageButton) findViewById(R.id.settings_button);
         filterButton = (ImageButton) findViewById(R.id.filter_button);
+        birdButton = findViewById(R.id.bird_toggle);
+        limeButton = findViewById(R.id.lime_toggle);
+        spinButton = findViewById(R.id.spin_toggle);
         logoutButton = (Button) findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +59,29 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
                 }
             }
         });
+
+        //add or delete bird
+        birdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle bird login
+            }
+        });
+        //add or delete lime
+        limeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle lime login
+            }
+        });
+        //add or delete spin
+        spinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle spin login
+            }
+        });
+
         filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
         filterOptionsLayer.setVisibility(View.INVISIBLE);
         // Shows filter menu when pressing the filter Button
