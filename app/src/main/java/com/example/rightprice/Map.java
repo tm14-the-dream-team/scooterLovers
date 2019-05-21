@@ -22,6 +22,12 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
     private Button birdButton;
     private Button limeButton;
     private Button spinButton;
+    private Button birdFilter;
+    private Button limeFilter;
+    private Button spinFilter;
+    //slider initialize maxPrice
+    private Button bikeFilter;
+    private Button scooFilter;
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
     private Button logoutButton;
@@ -39,6 +45,15 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         birdButton = findViewById(R.id.bird_toggle);
         limeButton = findViewById(R.id.lime_toggle);
         spinButton = findViewById(R.id.spin_toggle);
+        //start of button initialization
+        /*
+        birdFilter = findViewById(R.id.);
+        limeFilter = findViewById(R.id.);
+        spinFilter = findViewById(R.id.);
+        //maxPrice find
+        bikeFilter = findViewById(R.id.);
+        scooFilter = findViewById(R.id.);
+        */
         logoutButton = (Button) findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +96,50 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
                 //handle spin login
             }
         });
+
+        //some more functions for later
+        /*
+        //handle service filters
+        //filter for bird
+        birdFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle bird filter toggle
+            }
+        });
+        //filter for lime
+        limeFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle lime filter toggle
+            }
+        });
+        //filter for spin
+        spinFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle spin filter toggle
+            }
+        });
+
+        //alter maxPrice variable
+
+        //handle vehicle filters
+        //filter for bike
+        bikeFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle bike filter toggle
+            }
+        });
+        //filter for scooter
+        scooFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle scooter filter toggle
+            }
+        });
+         */
 
         filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
         filterOptionsLayer.setVisibility(View.INVISIBLE);
