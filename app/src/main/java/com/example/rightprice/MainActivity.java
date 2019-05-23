@@ -75,13 +75,40 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("LAUNCH MAP");
         Intent launchMap = new Intent(this, Map.class);
         startActivity(launchMap);
-        finish();
-    }
+        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);//1MB
+        network = new BasicNetwork(new HurlStack());
+        requestQueue = new RequestQueue(cache,network);
+        requestQueue.start();
+	finish();
+        try {
+            Location loc = new Location();
+            loc.setLatitude(32.880277);
+            loc.setLongitude(-117.237552);
+            Bird bird = new Bird("HSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
+            /**
+             * USER MUST HAVE CURRENTLY EXISTING LIME ACCOUNT ASSOCIATED WITH
+             * THE PHONE NUMBER PASSED BELOW
+             */
+            requestQueue.add(bird.getInitReq());
+            System.out.println("OKKKKKK");
+            Lime lime = new Lime("19493713971");//
+            requestQueue.add(lime.getInitReq());
 
-    protected void launchRegistration(View view) {
-        System.out.println("LAUNCH REGISTRATION");
-        Intent launchRegistration = new Intent(this, RegistrationActivity.class);
-        startActivity(launchRegistration);
+            while (bird.getToken()=="none") {
+
+            }
+            if(bird.getToken()!="none"){
+                requestQueue.add(bird.getVehicleReq());
+
+            }
+            else{
+                System.out.println("failure--noToken assigned");
+
+            }
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
