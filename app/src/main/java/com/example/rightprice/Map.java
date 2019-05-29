@@ -1,7 +1,11 @@
 package com.example.rightprice;
 
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +17,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class Map extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private ImageButton settingsButton;
+    private ImageButton filterButton;
+    private Button birdButton;
+    private Button limeButton;
+    private Button spinButton;
+    private Button birdFilter;
+    private Button limeFilter;
+    private Button spinFilter;
+    //slider initialize maxPrice
+    private Button bikeFilter;
+    private Button scooFilter;
+    private LinearLayout servicesLayer;
+    private LinearLayout filterOptionsLayer;
+    private Button logoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +40,129 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        settingsButton = (ImageButton) findViewById(R.id.settings_button);
+        filterButton = (ImageButton) findViewById(R.id.filter_button);
+        birdButton = findViewById(R.id.bird_toggle);
+        limeButton = findViewById(R.id.lime_toggle);
+        spinButton = findViewById(R.id.spin_toggle);
+        //start of button initialization
+        /*
+        birdFilter = findViewById(R.id.);
+        limeFilter = findViewById(R.id.);
+        spinFilter = findViewById(R.id.);
+        //maxPrice find
+        bikeFilter = findViewById(R.id.);
+        scooFilter = findViewById(R.id.);
+        */
+        logoutButton = (Button) findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                // implement logging out.
+            }
+        });
+        servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
+        servicesLayer.setVisibility(View.INVISIBLE);
+        // Shows settings when pressing the Settings Button
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                if (servicesLayer.getVisibility()==View.VISIBLE) {
+                    servicesLayer.setVisibility(View.INVISIBLE);
+                } else {
+                    servicesLayer.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        //add or delete bird
+        birdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle bird login
+            }
+        });
+        //add or delete lime
+        limeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle lime login
+            }
+        });
+        //add or delete spin
+        spinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle spin login
+            }
+        });
+
+        //some more functions for later
+        /*
+        //handle service filters
+        //filter for bird
+        birdFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle bird filter toggle
+            }
+        });
+        //filter for lime
+        limeFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle lime filter toggle
+            }
+        });
+        //filter for spin
+        spinFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle spin filter toggle
+            }
+        });
+
+        //alter maxPrice variable
+
+        //handle vehicle filters
+        //filter for bike
+        bikeFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle bike filter toggle
+            }
+        });
+        //filter for scooter
+        scooFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                //handle scooter filter toggle
+            }
+        });
+         */
+
+        filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
+        filterOptionsLayer.setVisibility(View.INVISIBLE);
+        // Shows filter menu when pressing the filter Button
+        filterButton.setOnClickListener(new View.OnClickListener(){
+           @Override
+            public void onClick(View v) {
+               if (filterOptionsLayer.getVisibility() == View.VISIBLE) {
+                   filterOptionsLayer.setVisibility(View.INVISIBLE);
+               } else {
+                   filterOptionsLayer.setVisibility(View.VISIBLE);
+               }
+            }
+        });
+    }
+
+
+    /*
+    *  On press of back button exit the app
+    */
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
     }
 
 
