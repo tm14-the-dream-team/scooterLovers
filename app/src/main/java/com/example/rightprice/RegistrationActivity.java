@@ -12,12 +12,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -56,6 +62,33 @@ public class RegistrationActivity extends AppCompatActivity {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d("SignInFailed", "createUserWithEmail:success");
                                         FirebaseUser user = mAuth.getCurrentUser();
+
+                                        String userUID = user.getUid();
+
+                                        DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
+
+                                        HashMap<String, Object> userSettings = new HashMap<>();
+                                        userSettings.put("priceFilter", false);
+                                        userSettings.put("serviceFilter", false);
+                                        userSettings.put("vehicleFilter", false);
+                                        userSettings.put("birdEmail", userUID + "@" + "ucsd.com");
+
+                                        userDocRef.set(userSettings).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d("SignInSuccess", "Settings Saved!");
+                                                Toast.makeText(RegistrationActivity.this, "SUCCESS" ,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.d("SignInFailed", "Settings NOT Saved!");
+                                                Toast.makeText(RegistrationActivity.this, "FAIL: " + e ,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
                                         startActivity(new Intent(RegistrationActivity.this, Map.class));
                                         finish();
                                     } else if (task.getException().getMessage() == "The email address is badly formatted."){
@@ -112,5 +145,7 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return result;
     }
+
+
 }
 
