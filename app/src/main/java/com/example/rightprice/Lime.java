@@ -35,12 +35,13 @@ public class Lime {
     }
 
     public Lime(String phoneNumber/*MUST BE INTERNATIONAL FORMAT EX: 15552221234*/) throws JSONException{
-        /*this.phoneNumber = phoneNumber;
-        String url = "https://web-production.lime.bike/api/rider/v1/login";
-                    //https://web-production.lime.bike/api/rider/v1/login?phone=19493713971
-                    //https://web-production.lime.bike/api/rider/v1/login?phone=+19493713971
+        this.phoneNumber = phoneNumber;
         JSONObject obj = new JSONObject();
-        obj.put("phone",this.phoneNumber);
+        //Phone number added to request manually here
+        String url = "https://web-production.lime.bike/api/rider/v1/login?phone="+this.phoneNumber;
+        //String url = "https://web-production.lime.bike/api/rider/v1/login";
+        //obj.put("phone",this.phoneNumber);
+
 
         Response.ErrorListener onErr = new Response.ErrorListener() {
             @Override
@@ -60,6 +61,6 @@ public class Lime {
 
         initReq = new JsonObjectRequest(Request.Method.GET,url,obj,onRes,onErr);
         System.out.println("HERE IS THE LIME INITREQ:"+initReq.toString());
-        System.out.println("HERE IS THE LIME obj:"+obj.toString());*/
+        System.out.println("HERE IS THE LIME obj:"+obj.toString());
     }
 }

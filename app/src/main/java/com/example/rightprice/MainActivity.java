@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             Location loc = new Location();
             loc.setLatitude(32.880277);
             loc.setLongitude(-117.237552);
-            Bird bird = new Bird("HSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
+            Bird bird = new Bird("KSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
             /**
              * USER MUST HAVE CURRENTLY EXISTING LIME ACCOUNT ASSOCIATED WITH
              * THE PHONE NUMBER PASSED BELOW
@@ -48,17 +48,20 @@ public class MainActivity extends AppCompatActivity {
             Lime lime = new Lime("19493713971");//
             requestQueue.add(lime.getInitReq());
 
-            while (bird.getToken()=="none") {
-
-            }
-            if(bird.getToken()!="none"){
+            if(!bird.getToken().equals("none")){
                 requestQueue.add(bird.getVehicleReq());
+                System.out.println("Token assigned");
 
             }
             else{
-                System.out.println("failure--noToken assigned");
+                System.out.println("No token Bird...");
+
+
 
             }
+
+
+
         }
         catch(Exception e){
             System.out.println(e.getMessage());
