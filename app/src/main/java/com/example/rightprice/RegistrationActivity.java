@@ -30,7 +30,6 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText userEmail, userPass, confirmPass;
     private Button regButton;
     private TextView userLogin;
-    private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
     @Override
@@ -43,7 +42,6 @@ public class RegistrationActivity extends AppCompatActivity {
         regButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
                 mAuth = FirebaseAuth.getInstance();
                 if (validate()) {
                     //TODO

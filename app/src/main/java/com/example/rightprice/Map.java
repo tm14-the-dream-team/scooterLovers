@@ -13,6 +13,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
 
@@ -31,9 +37,12 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
     private Button logoutButton;
+    private FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -80,6 +89,16 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 //handle bird login
+                FirebaseUser user = mAuth.getCurrentUser();
+
+                String userUID = user.getUid();
+
+                DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
+
+                HashMap<String, Object> Bird = new HashMap<>();
+                Bird.put("birdEmail", userUID + "@ucsd.com");
+
+                userDocRef.collection("Services").document("Bird").set(Bird);
             }
         });
         //add or delete lime
@@ -123,7 +142,7 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         });
 
         //alter maxPrice variable
-
+        /*
         //handle vehicle filters
         //filter for bike
         bikeFilter.setOnClickListener(new View.OnClickListener() {
@@ -141,6 +160,11 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         });
          */
 
+        //handle price filter
+
+
+        //handle services filter
+
         filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
         filterOptionsLayer.setVisibility(View.INVISIBLE);
         // Shows filter menu when pressing the filter Button
@@ -154,6 +178,8 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
                }
             }
         });
+
+
     }
 
 

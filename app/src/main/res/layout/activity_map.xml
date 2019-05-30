@@ -95,8 +95,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textOff="Delete"
-                    android:textOn="Add"
+                    android:textOff="Add"
+                    android:textOn="Delete"
                     android:textSize="14sp" />
 
 
@@ -123,8 +123,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textOff="Delete"
-                    android:textOn="Add"
+                    android:textOff="Add"
+                    android:textOn="Delete"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -149,8 +149,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textOff="Delete"
-                    android:textOn="Add"
+                    android:textOff="Add"
+                    android:textOn="Delete"
                     android:textSize="14sp" />
             </LinearLayout>
 
