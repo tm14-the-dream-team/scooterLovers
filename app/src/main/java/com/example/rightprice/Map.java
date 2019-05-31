@@ -1,5 +1,6 @@
 package com.example.rightprice;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -19,6 +20,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
+
+import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
 
@@ -42,7 +45,7 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -68,6 +71,11 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 // implement logging out.
+                FirebaseAuth.getInstance().signOut();
+
+                startActivity(new Intent(Map.this, MainActivity.class));
+                finish();
+
             }
         });
         servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
@@ -90,9 +98,7 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
             public void onClick(View v){
                 //handle bird login
                 FirebaseUser user = mAuth.getCurrentUser();
-
                 String userUID = user.getUid();
-
                 DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
 
                 HashMap<String, Object> Bird = new HashMap<>();
