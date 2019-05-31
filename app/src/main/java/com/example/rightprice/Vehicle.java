@@ -1,7 +1,7 @@
 package com.example.rightprice;
 
 class Vehicle {
-        public int getLat() {
+        public double getLat() {
                 return lat;
         }
 
@@ -9,7 +9,7 @@ class Vehicle {
                 this.lat = lat;
         }
 
-        public int getLng() {
+        public double getLng() {
                 return lng;
         }
 
@@ -33,19 +33,19 @@ class Vehicle {
                 this.battery = battery;
         }
 
-        public int getStartPrice() {
+        public double getStartPrice() {
                 return startPrice;
         }
 
-        public void setStartPrice(int startPrice) {
+        public void setStartPrice(double startPrice) {
                 this.startPrice = startPrice;
         }
 
-        public int getMinutePrice() {
+        public double getMinutePrice() {
                 return minutePrice;
         }
 
-        public void setMinutePrice(int minutePrice) {
+        public void setMinutePrice(double minutePrice) {
                 this.minutePrice = minutePrice;
         }
 
@@ -57,14 +57,30 @@ class Vehicle {
                 this.timeLimit = timeLimit;
         }
 
-        private int lat;
-        private int lng;
+        private double lat;
+        private double lng;
         private String vendor;
         private String id;
         private int battery;
-        private int startPrice;
-        private int minutePrice;
+        private double startPrice;
+        private double minutePrice;
         private int timeLimit;
+
+        public String toString(){
+                return "Vendor: "+vendor+", id: "+id+", location: ("+lat+","+lng+"), battery: "+battery+" Price: "+startPrice+" to start & "+ minutePrice+ " per minute";
+        }
+
+        public Vehicle(String vendor, String id, int battery, double lat, double lng, double startPrice, double minutePrice){
+                this.vendor = vendor;
+                this.id = id;
+                this.battery = battery;
+                this.lat = lat;
+                this.lng = lng;
+                this.startPrice = startPrice;
+                this.minutePrice = minutePrice;
+
+
+        }
 
 
 
