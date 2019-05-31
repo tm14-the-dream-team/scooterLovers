@@ -6,20 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toolbar;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Location;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
-
-
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,7 +13,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.CircleOptions;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
 
@@ -46,21 +31,14 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
     private Button logoutButton;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
-
-
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.current_location);
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 

@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
+import com.example.applemacbookair.locationtracker.LocationTracker;
+import com.example.applemacbookair.locationtracker.OnLocationChanged;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -22,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean bikeToggle;
     private boolean scooToggle;
     private GoogleMap mMap;
+    LocationTracker tracker;
 
     public void birdToggle(){
         birdToggle = !birdToggle;
@@ -79,24 +83,36 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tracker = new LocationTracker(this);
+        Toast.makeText(this, String.valueOf(tracker.getLatitude()), Toast.LENGTH_LONG).show();
+        tracker.setOnLocationChanged(new OnLocationChanged() {
+            @Override
+            public void OnChange(Location location) {
+
+            }
+        });
     }
 
     protected void launchMap(View view) {
         System.out.println("LAUNCH MAP");
         Intent launchMap = new Intent(this, Map.class);
-        //startActivity(launchMap);
-        DiskBasedCache cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);//1MB
-        BasicNetwork network = new BasicNetwork(new HurlStack());
-        RequestQueue requestQueue = new RequestQueue(cache,network);
+        startActivity(launchMap);
+        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);//1MB
+        network = new BasicNetwork(new HurlStack());
+        requestQueue = new RequestQueue(cache,network);
         requestQueue.start();
 	finish();
-/*
+
         try {
 
             Location loc = new Location();
             loc.setLatitude(32.880277);
             loc.setLongitude(-117.237552);
             Bird bird = new Bird("KSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
+            /**
+             * USER MUST HAVE CURRENTLY EXISTING LIME ACCOUNT ASSOCIATED WITH
+             * THE PHONE NUMBER PASSED BELOW
+             */
             requestQueue.add(bird.getInitReq());
             System.out.println("OKKKKKK");
             Lime lime = new Lime("19493713971");//
@@ -120,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         catch(Exception e){
             System.out.println(e.getMessage());
         }
-  */
+
     }
 
 
