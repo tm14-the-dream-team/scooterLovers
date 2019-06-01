@@ -209,16 +209,6 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
-
-    /*
-    *  On press of back button exit the app
-    */
-    @Override
-    public void onBackPressed() {
-        finishAffinity();
-    }
-
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -239,6 +229,12 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setMinZoomPreference(11);
     }
+
+
+
+
+
+
 
     private void enableMyLocationIfPermitted() {
         if (ContextCompat.checkSelfPermission(this,
@@ -305,6 +301,15 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
                     mMap.addCircle(circleOptions);
                 }
             };
+
+
+    /*
+     *  On press of back button exit the app
+     */
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+    }
 
 
 }

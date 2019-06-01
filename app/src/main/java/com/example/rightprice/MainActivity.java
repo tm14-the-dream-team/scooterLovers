@@ -92,6 +92,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+
+        Intent launchMap = new Intent(this, Map.class);
+        startActivity(launchMap);
+        finish();
+
+        /*
         mAuth = FirebaseAuth.getInstance();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -100,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(launchMap);
             finish();
         }
+
+        */
     }
 
     @Override
@@ -109,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+/*
 
     protected void login(View view) {
         mAuth = FirebaseAuth.getInstance();
@@ -155,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     protected void launchRegistration(View view) {
         System.out.println("LAUNCH REGISTRATION");
         Intent launchRegistration = new Intent(this, RegistrationActivity.class);
@@ -162,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+*/
 
     @Override
     public void onBackPressed() {
