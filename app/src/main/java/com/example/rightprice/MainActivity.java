@@ -2,19 +2,8 @@ package com.example.rightprice;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     private boolean birdToggle;
@@ -23,10 +12,6 @@ public class MainActivity extends AppCompatActivity {
     private double maxPrice = 20;
     private boolean bikeToggle;
     private boolean scooToggle;
-    private FirebaseAuth mAuth;
-
-    private static int SPLASH_TIME_OUT = 4000;
-
 
     public void birdToggle(){
         birdToggle = !birdToggle;
@@ -72,31 +57,18 @@ public class MainActivity extends AppCompatActivity {
         maxPrice = num;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth = FirebaseAuth.getInstance();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            Intent launchMap = new Intent(this, Map.class);
+    /*    @Override
+        public void onStart() {
+            super.onStart();
+            // Check if user is signed in (non-null) and update UI accordingly.
+            FirebaseUser currentUser = mAuth.getCurrentUser();
             startActivity(launchMap);
-            finish();
         }
-    }
-
+    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent homeIntent = new Intent(MainActivity.this, Splash.class);
-                startActivity(homeIntent);
-                //finish(); <-- I think splash ends on its own? might not need finish()?
-            }
-        }, SPLASH_TIME_OUT);
     }
 
     protected void launchMap(View view) {
@@ -104,48 +76,6 @@ public class MainActivity extends AppCompatActivity {
         Intent launchMap = new Intent(this, Map.class);
         startActivity(launchMap);
         finish();
-    }
-
-    protected void login(View view) {
-        mAuth = FirebaseAuth.getInstance();
-
-        EditText emailText = (EditText) findViewById(R.id.loginEmail);
-        EditText passText = (EditText) findViewById(R.id.loginPass);
-
-        String email = emailText.getText().toString();
-        String password = passText.getText().toString();
-
-
-        try {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d("LOGIN", "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-
-                                mAuth = FirebaseAuth.getInstance();
-
-                                startActivity(new Intent(MainActivity.this, Map.class));
-                                finish();
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w("LOGIN", "signInWithEmail:failure", task.getException());
-                                Toast.makeText(MainActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-
-                            // ...
-                        }
-                    });
-        } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Please enter all information.",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-
     }
 
     protected void launchRegistration(View view) {

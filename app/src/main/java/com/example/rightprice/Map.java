@@ -1,6 +1,5 @@
 package com.example.rightprice;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -19,9 +18,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
+import android.location.Location;
 
-import static com.google.firebase.auth.FirebaseAuth.getInstance;
+
+import java.util.HashMap;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
 
@@ -45,7 +45,7 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mAuth = getInstance();
+        mAuth = FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -71,11 +71,6 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 // implement logging out.
-                FirebaseAuth.getInstance().signOut();
-
-                startActivity(new Intent(Map.this, MainActivity.class));
-                finish();
-
             }
         });
         servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
@@ -98,7 +93,9 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
             public void onClick(View v){
                 //handle bird login
                 FirebaseUser user = mAuth.getCurrentUser();
+
                 String userUID = user.getUid();
+
                 DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
 
                 HashMap<String, Object> Bird = new HashMap<>();
@@ -175,13 +172,13 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         filterOptionsLayer.setVisibility(View.INVISIBLE);
         // Shows filter menu when pressing the filter Button
         filterButton.setOnClickListener(new View.OnClickListener(){
-           @Override
+            @Override
             public void onClick(View v) {
-               if (filterOptionsLayer.getVisibility() == View.VISIBLE) {
-                   filterOptionsLayer.setVisibility(View.INVISIBLE);
-               } else {
-                   filterOptionsLayer.setVisibility(View.VISIBLE);
-               }
+                if (filterOptionsLayer.getVisibility() == View.VISIBLE) {
+                    filterOptionsLayer.setVisibility(View.INVISIBLE);
+                } else {
+                    filterOptionsLayer.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -190,8 +187,8 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
 
 
     /*
-    *  On press of back button exit the app
-    */
+     *  On press of back button exit the app
+     */
     @Override
     public void onBackPressed() {
         finishAffinity();
