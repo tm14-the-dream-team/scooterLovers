@@ -4,4 +4,6 @@
     <string name="bird_text">Bird</string>
     <string name="lime_text">Lime</string>
     <string name="spin_text">Spin</string>
+    <string name="bike_text">Bike</string>
+    <string name="scooter_text">Scooter</string>
 </resources>
