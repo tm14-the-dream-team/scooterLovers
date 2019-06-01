@@ -1,20 +1,40 @@
 package com.example.rightprice;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+
+import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class Map extends FragmentActivity implements OnMapReadyCallback {
+
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private GoogleMap mMap;
     private ImageButton settingsButton;
@@ -31,16 +51,18 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
     private Button logoutButton;
+    private FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAuth = getInstance();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
 
 
         settingsButton = (ImageButton) findViewById(R.id.settings_button);
@@ -57,17 +79,26 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         bikeFilter = findViewById(R.id.);
         scooFilter = findViewById(R.id.);
         */
+
+
+        /*
         logoutButton = (Button) findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 // implement logging out.
+                FirebaseAuth.getInstance().signOut();
+
+                startActivity(new Intent(Map.this, MainActivity.class));
+                finish();
+
             }
 
 
 
 
-        });
+        }*/
+
         servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
         servicesLayer.setVisibility(View.INVISIBLE);
         // Shows settings when pressing the Settings Button
@@ -87,6 +118,14 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 //handle bird login
+                FirebaseUser user = mAuth.getCurrentUser();
+                String userUID = user.getUid();
+                DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
+
+                HashMap<String, Object> Bird = new HashMap<>();
+                Bird.put("birdEmail", userUID + "@ucsd.com");
+
+                userDocRef.collection("Services").document("Bird").set(Bird);
             }
         });
         //add or delete lime
@@ -130,7 +169,7 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         });
 
         //alter maxPrice variable
-
+        /*
         //handle vehicle filters
         //filter for bike
         bikeFilter.setOnClickListener(new View.OnClickListener() {
@@ -148,6 +187,11 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
         });
          */
 
+        //handle price filter
+
+
+        //handle services filter
+
         filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
         filterOptionsLayer.setVisibility(View.INVISIBLE);
         // Shows filter menu when pressing the filter Button
@@ -161,6 +205,8 @@ public class Map extends FragmentActivity implements OnMapReadyCallback {
                }
             }
         });
+
+
     }
 
 
