@@ -30,6 +30,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText userEmail, userPass, confirmPass;
     private Button regButton;
     private TextView userLogin;
+    private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
     @Override
@@ -42,6 +43,7 @@ public class RegistrationActivity extends AppCompatActivity {
         regButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
                 mAuth = FirebaseAuth.getInstance();
                 if (validate()) {
                     //TODO
@@ -69,6 +71,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                         userSettings.put("priceFilter", false);
                                         userSettings.put("serviceFilter", false);
                                         userSettings.put("vehicleFilter", false);
+                                        userSettings.put("birdEmail", userUID + "@" + "ucsd.com");
 
                                         userDocRef.set(userSettings).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
@@ -142,5 +145,7 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return result;
     }
+
+
 }
 
