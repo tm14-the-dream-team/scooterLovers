@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean scooToggle;
     private FirebaseAuth mAuth;
 
-    private static int SPLASH_TIME_OUT = 4000;
-
 
     public void birdToggle(){
         birdToggle = !birdToggle;
@@ -88,15 +86,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent homeIntent = new Intent(MainActivity.this, Splash.class);
-                startActivity(homeIntent);
-                //finish(); <-- I think splash ends on its own? might not need finish()?
-            }
-        }, SPLASH_TIME_OUT);
     }
 
     protected void launchMap(View view) {
