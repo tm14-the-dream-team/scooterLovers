@@ -12,378 +12,422 @@
         android:layout_height="match_parent"
         tools:context=".Map" />
 
+
     <LinearLayout
-        android:id="@+id/filter_layer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="right"
         android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/filter_button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_sort_by_size" />
+            android:background="#006A96"
+            android:backgroundTint="#006A96"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/settings_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#006A96"
+                android:src="@android:drawable/ic_menu_manage" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/logobig" />
+
+            <ImageButton
+                android:id="@+id/filter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#006A96"
+                android:src="@android:drawable/ic_menu_sort_by_size" />
+
+        </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/filter_options_layer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/Menu_Color"
-            android:gravity="right"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:id="@+id/filter_price_layer"
-                android:layout_width="match_parent"
+                android:id="@+id/services_layer"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:background="@color/Menu_Color"
+                android:orientation="vertical"
+                android:visibility="visible">
 
                 <LinearLayout
-                    android:id="@+id/price_layer_text"
+                    android:id="@+id/bird_layer"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/price_label"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Price"
-                        android:textAlignment="center"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
-                        android:typeface="normal" />
-                </LinearLayout>
-
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <SeekBar
-                        android:id="@+id/seekBar"
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:max="100"
-                        android:progress="50" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/filter_vehicle_layer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:id="@+id/vehicle_layer_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/vehicle_layer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Vehicle"
-                        android:textAlignment="center"
-                        android:textColor="#000000"
-                        android:textSize="20sp" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/vehicle_bird_layer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/vehicle_bird_text"
-                        android:layout_width="60dp"
+                        android:id="@+id/bird_text"
+                        android:layout_width="120dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/bird_text"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="20sp" />
 
                     <ToggleButton
-                        android:id="@+id/vehicle_bird_toggle"
+                        android:id="@+id/bird_toggle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textOff="Delete"
-                        android:textOn="Add"
+                        android:textOff="Add"
+                        android:textOn="Delete"
                         android:textSize="14sp" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/vehicle_lime_layer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:id="@+id/lime_layer"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/vehicle_lime_text"
-                        android:layout_width="60dp"
+                        android:id="@+id/lime_text"
+                        android:layout_width="120dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/lime_text"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="20sp" />
 
                     <ToggleButton
-                        android:id="@+id/vehicle_lime_toggle"
+                        android:id="@+id/lime_toggle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textOff="Delete"
-                        android:textOn="Add"
+                        android:textOff="Add"
+                        android:textOn="Delete"
                         android:textSize="14sp" />
-
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/vehicle_spin_layer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:id="@+id/spin_layer"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/vehicle_spin_text"
-                        android:layout_width="60dp"
+                        android:id="@+id/spin_text"
+                        android:layout_width="120dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/spin_text"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="20sp" />
 
                     <ToggleButton
-                        android:id="@+id/vehicle_spin_toggle"
+                        android:id="@+id/spin_toggle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textOff="Delete"
-                        android:textOn="Add"
+                        android:textOff="Add"
+                        android:textOn="Delete"
                         android:textSize="14sp" />
-
                 </LinearLayout>
 
+                <Button
+                    android:id="@+id/logout_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:text="log out" />
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_weight="8"
+                    android:background="?android:attr/listDivider" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/filter_service_layer"
-                android:layout_width="match_parent"
+                android:id="@+id/filter_layer"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_gravity="right"
                 android:layout_weight="1"
+                android:gravity="right"
                 android:orientation="vertical">
 
+
                 <LinearLayout
-                    android:id="@+id/service_layer_text"
+                    android:id="@+id/filter_options_layer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="0dp"
+                    android:background="@color/Menu_Color"
+                    android:gravity="right"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/service_layer"
+                    <LinearLayout
+                        android:id="@+id/filter_price_layer"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/price_layer_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/price_label"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Price"
+                                android:textAlignment="center"
+                                android:textColor="#000000"
+                                android:textSize="20sp"
+                                android:typeface="normal" />
+                        </LinearLayout>
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0"
+                            android:orientation="vertical">
+
+                            <SeekBar
+                                android:id="@+id/seekBar"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:max="100"
+                                android:progress="50" />
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/filter_vehicle_layer"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:text="Service"
-                        android:textAlignment="center"
-                        android:textColor="#000000"
-                        android:textSize="20sp" />
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/vehicle_layer_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vehicle_layer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Vehicle"
+                                android:textAlignment="center"
+                                android:textColor="#000000"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/vehicle_bird_layer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vehicle_bird_text"
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/bird_text"
+                                android:textColor="#000000"
+                                android:textSize="16sp" />
+
+                            <ToggleButton
+                                android:id="@+id/vehicle_bird_toggle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textOff="Delete"
+                                android:textOn="Add"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/vehicle_lime_layer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vehicle_lime_text"
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/lime_text"
+                                android:textColor="#000000"
+                                android:textSize="16sp" />
+
+                            <ToggleButton
+                                android:id="@+id/vehicle_lime_toggle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textOff="Delete"
+                                android:textOn="Add"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/vehicle_spin_layer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/vehicle_spin_text"
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/spin_text"
+                                android:textColor="#000000"
+                                android:textSize="16sp" />
+
+                            <ToggleButton
+                                android:id="@+id/vehicle_spin_toggle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textOff="Delete"
+                                android:textOn="Add"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/filter_service_layer"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/service_layer_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/service_layer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Service"
+                                android:textAlignment="center"
+                                android:textColor="#000000"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/service_bike_layer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/service_bike_text"
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/bike_text"
+                                android:textColor="#000000"
+                                android:textSize="16sp" />
+
+                            <ToggleButton
+                                android:id="@+id/service_bike_toggle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textOff="Delete"
+                                android:textOn="Add"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/service_scooter_layer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/service_scooter_text"
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/scooter_text"
+                                android:textColor="#000000"
+                                android:textSize="16sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="vertical"></LinearLayout>
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/divider4"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="?android:attr/listDivider" />
+
                 </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/service_bike_layer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/service_bike_text"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/bike_text"
-                        android:textColor="#000000"
-                        android:textSize="16sp" />
-
-                    <ToggleButton
-                        android:id="@+id/service_bike_toggle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textOff="Delete"
-                        android:textOn="Add"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/service_scooter_layer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/service_scooter_text"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/scooter_text"
-                        android:textColor="#000000"
-                        android:textSize="16sp" />
-
-                    <ToggleButton
-                        android:id="@+id/service_scooter_toggle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textOff="Delete"
-                        android:textOn="Add"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-
-
-
             </LinearLayout>
-        </LinearLayout>
-
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/settings_layer"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <ImageButton
-            android:id="@+id/settings_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_manage" />
-
-        <LinearLayout
-            android:id="@+id/services_layer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/Menu_Color"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <LinearLayout
-                android:id="@+id/bird_layer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/bird_text"
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/bird_text"
-                    android:textColor="#000000"
-                    android:textSize="20sp" />
-
-                <ToggleButton
-                    android:id="@+id/bird_toggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textOff="Add"
-                    android:textOn="Delete"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/lime_layer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/lime_text"
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/lime_text"
-                    android:textColor="#000000"
-                    android:textSize="20sp" />
-
-                <ToggleButton
-                    android:id="@+id/lime_toggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textOff="Add"
-                    android:textOn="Delete"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/spin_layer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/spin_text"
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/spin_text"
-                    android:textColor="#000000"
-                    android:textSize="20sp" />
-
-                <ToggleButton
-                    android:id="@+id/spin_toggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textOff="Add"
-                    android:textOn="Delete"
-                    android:textSize="14sp" />
-            </LinearLayout>
-            <Button
-                android:id="@+id/logout_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="log out" />
         </LinearLayout>
     </LinearLayout>
 
