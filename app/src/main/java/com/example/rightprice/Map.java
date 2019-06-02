@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -26,14 +27,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
 import java.util.HashMap;
+
+import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
@@ -41,9 +47,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private ImageButton settingsButton;
     private ImageButton filterButton;
-    private Button birdButton;
-    private Button limeButton;
-    private Button spinButton;
+    private ToggleButton birdButton;
+    private ToggleButton limeButton;
+    private ToggleButton spinButton;
     private Button birdFilter;
     private Button limeFilter;
     private Button spinFilter;
@@ -96,13 +102,44 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_map);
 
         getLocationPermission();
 
+        mAuth = getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Toast.makeText(Map.this, user.getUid(),
+                Toast.LENGTH_SHORT).show();
+
         settingsButton = (ImageButton) findViewById(R.id.settings_button);
         filterButton = (ImageButton) findViewById(R.id.filter_button);
+
         birdButton = findViewById(R.id.bird_toggle);
+        DocumentReference birdSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Bird");
+
+        birdSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    if (documentSnapshot.getBoolean("birdAdded"))
+                        birdButton.toggle();
+                } else {
+                    System.err.println("No such document!");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("getCurrSettings", "getCurrSettings:failure", e);
+                Toast.makeText(Map.this, "failed to get settings.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
         limeButton = findViewById(R.id.lime_toggle);
         spinButton = findViewById(R.id.spin_toggle);
         //start of button initialization
@@ -150,6 +187,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
 
                 HashMap<String, Object> Bird = new HashMap<>();
+                Bird.put("birdAdded", true);
                 Bird.put("birdEmail", userUID + "@ucsd.com");
 
                 userDocRef.collection("Services").document("Bird").set(Bird);

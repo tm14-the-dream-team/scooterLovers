@@ -86,6 +86,19 @@ public class RegistrationActivity extends AppCompatActivity {
                                             }
                                         });
 
+                                        HashMap<String, Object> Bird = new HashMap<>();
+                                        Bird.put("birdAdded", false);
+                                        userDocRef.collection("Services").document("Bird").set(Bird);
+
+                                        HashMap<String, Object> Lime = new HashMap<>();
+                                        Lime.put("limeAdded", false);
+                                        userDocRef.collection("Services").document("Lime").set(Lime);
+
+                                        HashMap<String, Object> Spin = new HashMap<>();
+                                        Spin.put("SpinAdded", false);
+                                        userDocRef.collection("Services").document("Spin").set(Spin);
+
+
                                         startActivity(new Intent(RegistrationActivity.this, Map.class));
                                         finish();
                                     } else if (task.getException().getMessage() == "The email address is badly formatted."){
@@ -111,6 +124,7 @@ public class RegistrationActivity extends AppCompatActivity {
         userLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
+                finish();
             }
         });
 
@@ -118,11 +132,11 @@ public class RegistrationActivity extends AppCompatActivity {
 
     //links variables to the content ID's
     private void setupUIViews() {
-        userEmail = (EditText)findViewById(R.id.userEmail);
-        userPass = (EditText)findViewById(R.id.password);
-        confirmPass = (EditText)findViewById(R.id.confirmPass);
-        regButton = (Button)findViewById(R.id.btnRegister);
-        userLogin = (TextView)findViewById(R.id.userLogin);
+        userEmail = findViewById(R.id.userEmail);
+        userPass = findViewById(R.id.password);
+        confirmPass = findViewById(R.id.confirmPass);
+        regButton = findViewById(R.id.btnRegister);
+        userLogin = findViewById(R.id.userLogin);
 
     }
 
