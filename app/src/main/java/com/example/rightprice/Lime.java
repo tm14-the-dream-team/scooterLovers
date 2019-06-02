@@ -179,7 +179,11 @@ public class Lime {
            JSONObject attributes = current.getJSONObject("attributes");
            lat = attributes.getDouble("latitude");
            lng= attributes.getDouble("longitude");
-           temp_bat = attributes.getString("battery_level");
+           type = attributes.getString("type_name");
+            if(type.equals("scooter"))
+                temp_bat = attributes.getString("battery_level");
+            else
+                temp_bat = "n/a";
            switch(temp_bat){
                case "high" :
                        bat = 85;
@@ -191,13 +195,12 @@ public class Lime {
                         bat = 25;
                         break;
                default:
-                   bat = 0;
+                   bat = -1;
            }
 
            rate = attributes.getString("rate_plan");
            rate = rate.replace("\n", "");
            rate = rate.replace("+", "");
-           type = attributes.getString("type_name");
 
 
            //public Vehicle(String vendor, String id, int battery, double lat, double lng, String price)
