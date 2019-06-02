@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
@@ -23,7 +24,9 @@
             android:id="@+id/filter_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_sort_by_size" />
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:visibility="invisible"
+            tools:visibility="invisible" />
 
         <LinearLayout
             android:id="@+id/filter_options_layer"
@@ -31,7 +34,9 @@
             android:layout_height="wrap_content"
             android:background="@color/Menu_Color"
             android:gravity="right"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="invisible"
+            tools:visibility="invisible">
 
             <LinearLayout
                 android:id="@+id/filter_price_layer"
@@ -269,8 +274,6 @@
                         android:textSize="14sp" />
 
                 </LinearLayout>
-
-
 
 
             </LinearLayout>
