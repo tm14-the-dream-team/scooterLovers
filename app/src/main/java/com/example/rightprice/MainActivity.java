@@ -2,6 +2,7 @@ package com.example.rightprice;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean bikeToggle;
     private boolean scooToggle;
     private FirebaseAuth mAuth;
+
+    private static int SPLASH_TIME_OUT = 4000;
 
 
     public void birdToggle(){
@@ -86,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent homeIntent = new Intent(MainActivity.this, Splash.class);
+                startActivity(homeIntent);
+                //finish(); <-- I think splash ends on its own? might not need finish()?
+            }
+        }, SPLASH_TIME_OUT);
     }
 
     protected void launchMap(View view) {
