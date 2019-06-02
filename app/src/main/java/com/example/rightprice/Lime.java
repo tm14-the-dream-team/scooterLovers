@@ -27,7 +27,7 @@ public class Lime {
     private  JsonObjectRequest initReq;
 
 
-    private  JsonObjectRequest vehicleReq;
+    private JsonObjectRequest vehicleReq;
     private String token;
     private String id;
     private String expiration;

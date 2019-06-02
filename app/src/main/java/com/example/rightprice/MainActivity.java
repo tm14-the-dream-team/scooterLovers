@@ -64,6 +64,19 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("ADDING LIME GET VEHICLES REQ .....");
             requestQueue.add(lime.getVehicleReq());
 
+            System.out.println("-------------------");
+            System.out.println("-------------------");
+            System.out.println("-------------------");
+            System.out.println("HERE ARE THE BIRDS");
+            System.out.println("-------------------");
+            System.out.println("-------------------");
+            Thread.sleep(10000);
+            System.out.println(bird.getBirds());
+            System.out.println("############################");
+            System.out.println("############################");
+            System.out.println("############################");
+            System.out.println("############################");
+            System.out.println("############################");
 
 
         }

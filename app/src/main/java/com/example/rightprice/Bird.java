@@ -23,18 +23,16 @@ import java.util.Map;
 public class Bird {
 
 
-
-    public List<Vehicle> getBirds() {
-        return birds;
-    }
-
     private List<Vehicle>birds;
-
     private JsonObjectRequest initReq;
     private String token;
     private String id;
     private String expiration;
     private String email;
+
+    public List<Vehicle> getBirds() {
+        return birds;
+    }
 
     public JsonObjectRequest getVehicleReq() {
         return vehicleReq;
@@ -53,6 +51,7 @@ public class Bird {
     public String getExpiration() {
         return expiration;
     }
+
     private void generateVehicles(JSONObject resp) throws JSONException {
         birds = new ArrayList<Vehicle>();
         JSONArray items = resp.getJSONArray("birds");
@@ -73,7 +72,7 @@ public class Bird {
                 bat = Integer.parseInt(current.getString("battery_level"));
                 id = current.getString("id");
 
-                Vehicle veh = new Vehicle("bird",id,bat,lat,lng,"$1 to unlock $0.27/min");
+                Vehicle veh = new Vehicle("bird",id,bat,lat,lng,"$1 to unlock $0.27 / 1 min");
                 veh.setType("scooter");
                 System.out.print(veh);
 
@@ -93,11 +92,11 @@ public class Bird {
         id="eee4913d-078e-4f13-8bd6-87d3245a3fb0";
         //token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
         token="Bird eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
+        generateVehicleReq(loc,1000);
+
         JSONObject obj = new JSONObject();
         String url = "https://api.bird.co/user/login";
         obj.put("email",email);
-        generateVehicleReq(loc,1000);
-
         Response.ErrorListener onErr = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
