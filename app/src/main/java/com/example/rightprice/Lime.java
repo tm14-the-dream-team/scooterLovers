@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,7 +33,7 @@ public class Lime {
     private String expiration;
     private String phoneNumber;
 
-    public Vehicle[] getLimes() {
+    public List<Vehicle> getLimes() {
         return limes;
     }
 
@@ -132,7 +133,11 @@ public class Lime {
             @Override
             public void onResponse(JSONObject response) {
                 System.out.println("Limes got.. success");
-                generateVehicles(response);
+                try {
+                    generateVehicles(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 System.out.println(response.toString());
 
 
@@ -155,11 +160,59 @@ public class Lime {
 
     }
 
-    private void generateVehicles(JSONObject response) {
+    private void generateVehicles(JSONObject response) throws JSONException {
         limes = new ArrayList<Vehicle>();
+        JSONArray items = response.getJSONObject("data").getJSONObject("attributes").getJSONArray("bikes");
+        String id = "";
+        String rate;
+        String type;
+        String temp_bat;
+        double lat;
+        double lng;
+        int bat;
 
 
 
-        
+        for(int i=0;i<items.length();++i){
+           JSONObject current = (JSONObject) items.get(i);
+           id = current.getString("id");
+           JSONObject attributes = current.getJSONObject("attributes");
+           lat = attributes.getDouble("latitude");
+           lng= attributes.getDouble("longitude");
+           temp_bat = attributes.getString("battery_level");
+           switch(temp_bat){
+               case "high" :
+                       bat = 85;
+                       break;
+               case "medium":
+                        bat = 50;
+                        break;
+               case "low":
+                        bat = 25;
+                        break;
+               default:
+                   bat = 0;
+           }
+
+           rate = attributes.getString("rate_plan");
+           rate = rate.replace("\n", "");
+           rate = rate.replace("+", "");
+           type = attributes.getString("type_name");
+
+
+           //public Vehicle(String vendor, String id, int battery, double lat, double lng, String price)
+           Vehicle veh = new Vehicle("lime",id,bat,lat,lng,rate);
+           veh.setType(type);
+           limes.add(veh);
+
+
+           System.out.println("Here are the limes.....");
+
+        }
+
+        for(int i=0;i<limes.size();++i){
+            System.out.println(limes.get(i));
+        }
+
     }
 }

@@ -73,7 +73,8 @@ public class Bird {
                 bat = Integer.parseInt(current.getString("battery_level"));
                 id = current.getString("id");
 
-                Vehicle veh = new Vehicle("bird",id,bat,lat,lng,1.00,.27);
+                Vehicle veh = new Vehicle("bird",id,bat,lat,lng,"$1 to unlock $0.27/min");
+                veh.setType("scooter");
                 System.out.print(veh);
 
                 birds.add(veh);
