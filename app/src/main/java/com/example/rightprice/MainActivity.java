@@ -85,15 +85,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
+
+
     }
 
-    protected void launchMap(View view) {
-        System.out.println("LAUNCH MAP");
-        Intent launchMap = new Intent(this, Map.class);
-        startActivity(launchMap);
-        finish();
-    }
+
 
     protected void login(View view) {
         mAuth = FirebaseAuth.getInstance();

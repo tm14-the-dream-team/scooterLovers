@@ -30,7 +30,6 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText userEmail, userPass, confirmPass;
     private Button regButton;
     private TextView userLogin;
-    private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
     @Override
@@ -43,7 +42,6 @@ public class RegistrationActivity extends AppCompatActivity {
         regButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
                 mAuth = FirebaseAuth.getInstance();
                 if (validate()) {
                     //TODO
@@ -71,7 +69,6 @@ public class RegistrationActivity extends AppCompatActivity {
                                         userSettings.put("priceFilter", false);
                                         userSettings.put("serviceFilter", false);
                                         userSettings.put("vehicleFilter", false);
-                                        userSettings.put("birdEmail", userUID + "@" + "ucsd.com");
 
                                         userDocRef.set(userSettings).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
@@ -88,6 +85,19 @@ public class RegistrationActivity extends AppCompatActivity {
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         });
+
+                                        HashMap<String, Object> Bird = new HashMap<>();
+                                        Bird.put("birdAdded", false);
+                                        userDocRef.collection("Services").document("Bird").set(Bird);
+
+                                        HashMap<String, Object> Lime = new HashMap<>();
+                                        Lime.put("limeAdded", false);
+                                        userDocRef.collection("Services").document("Lime").set(Lime);
+
+                                        HashMap<String, Object> Spin = new HashMap<>();
+                                        Spin.put("SpinAdded", false);
+                                        userDocRef.collection("Services").document("Spin").set(Spin);
+
 
                                         startActivity(new Intent(RegistrationActivity.this, Map.class));
                                         finish();
@@ -114,6 +124,7 @@ public class RegistrationActivity extends AppCompatActivity {
         userLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
+                finish();
             }
         });
 
@@ -121,11 +132,11 @@ public class RegistrationActivity extends AppCompatActivity {
 
     //links variables to the content ID's
     private void setupUIViews() {
-        userEmail = (EditText)findViewById(R.id.userEmail);
-        userPass = (EditText)findViewById(R.id.password);
-        confirmPass = (EditText)findViewById(R.id.confirmPass);
-        regButton = (Button)findViewById(R.id.btnRegister);
-        userLogin = (TextView)findViewById(R.id.userLogin);
+        userEmail = findViewById(R.id.userEmail);
+        userPass = findViewById(R.id.password);
+        confirmPass = findViewById(R.id.confirmPass);
+        regButton = findViewById(R.id.btnRegister);
+        userLogin = findViewById(R.id.userLogin);
 
     }
 
@@ -145,7 +156,6 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return result;
     }
-
 
 }
 
