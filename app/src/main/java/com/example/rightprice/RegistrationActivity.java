@@ -12,19 +12,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     private EditText userEmail, userPass, confirmPass;
     private Button regButton;
     private TextView userLogin;
-    private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
     @Override
@@ -37,7 +42,6 @@ public class RegistrationActivity extends AppCompatActivity {
         regButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
                 mAuth = FirebaseAuth.getInstance();
                 if (validate()) {
                     //TODO
@@ -56,12 +60,42 @@ public class RegistrationActivity extends AppCompatActivity {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d("SignInFailed", "createUserWithEmail:success");
                                         FirebaseUser user = mAuth.getCurrentUser();
+
+                                        String userUID = user.getUid();
+
+                                        DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
+
+                                        HashMap<String, Object> userSettings = new HashMap<>();
+                                        userSettings.put("priceFilter", false);
+                                        userSettings.put("serviceFilter", false);
+                                        userSettings.put("vehicleFilter", false);
+
+                                        userDocRef.set(userSettings).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d("SignInSuccess", "Settings Saved!");
+                                                Toast.makeText(RegistrationActivity.this, "SUCCESS" ,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.d("SignInFailed", "Settings NOT Saved!");
+                                                Toast.makeText(RegistrationActivity.this, "FAIL: " + e ,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
                                         startActivity(new Intent(RegistrationActivity.this, Map.class));
                                         finish();
-                                    } else {
+                                    } else if (task.getException().getMessage() == "The email address is badly formatted."){
                                         // If sign in fails, display a message to the user.
                                         Log.w("SignInFailed", "createUserWithEmail:failure", task.getException());
-                                        Toast.makeText(RegistrationActivity.this, "User already exists.",
+                                        Toast.makeText(RegistrationActivity.this, "Email address is invalid." ,
+                                                Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Log.w("SignInFailed", "createUserWithEmail:failure", task.getException());
+                                        Toast.makeText(RegistrationActivity.this, "" + task.getException().getMessage(),
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -99,9 +133,11 @@ public class RegistrationActivity extends AppCompatActivity {
         String pass = userPass.getText().toString();
         String cPass = confirmPass.getText().toString();
         if (email.isEmpty() && pass.isEmpty() && cPass.isEmpty()) {
-            Toast.makeText(this, "Please enter all information", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter all information.", Toast.LENGTH_SHORT).show();
         }
-        else {
+        else if (pass.equals(cPass) == false) {
+            Toast.makeText(this, "Passwords do not match.", Toast.LENGTH_SHORT).show();
+        } else {
             result = true;
         }
         return result;

@@ -2,8 +2,18 @@ package com.example.rightprice;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     private boolean birdToggle;
@@ -12,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private double maxPrice = 20;
     private boolean bikeToggle;
     private boolean scooToggle;
+    private FirebaseAuth mAuth;
+
 
     public void birdToggle(){
         birdToggle = !birdToggle;
@@ -57,14 +69,19 @@ public class MainActivity extends AppCompatActivity {
         maxPrice = num;
     }
 
-/*    @Override
+    @Override
     public void onStart() {
         super.onStart();
+        mAuth = FirebaseAuth.getInstance();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        startActivity(launchMap);
+        if (currentUser != null) {
+            Intent launchMap = new Intent(this, Map.class);
+            startActivity(launchMap);
+            finish();
+        }
     }
-*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,43 +92,53 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("LAUNCH MAP");
         Intent launchMap = new Intent(this, Map.class);
         startActivity(launchMap);
-        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);//1MB
-        network = new BasicNetwork(new HurlStack());
-        requestQueue = new RequestQueue(cache,network);
-        requestQueue.start();
-	finish();
+        finish();
+    }
+
+    protected void login(View view) {
+        mAuth = FirebaseAuth.getInstance();
+
+        EditText emailText = (EditText) findViewById(R.id.loginEmail);
+        EditText passText = (EditText) findViewById(R.id.loginPass);
+
+        String email = emailText.getText().toString();
+        String password = passText.getText().toString();
+
         try {
-            Location loc = new Location();
-            loc.setLatitude(32.880277);
-            loc.setLongitude(-117.237552);
-            Bird bird = new Bird("KSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
-            /**
-             * USER MUST HAVE CURRENTLY EXISTING LIME ACCOUNT ASSOCIATED WITH
-             * THE PHONE NUMBER PASSED BELOW
-             */
-            requestQueue.add(bird.getInitReq());
-            System.out.println("OKKKKKK");
-            Lime lime = new Lime("19493713971");//
-            requestQueue.add(lime.getInitReq());
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("LOGIN", "signInWithEmail:success");
+                                FirebaseUser user = mAuth.getCurrentUser();
 
-            if(!bird.getToken().equals("none")){
-                requestQueue.add(bird.getVehicleReq());
-                System.out.println("Token assigned");
+                                mAuth = FirebaseAuth.getInstance();
 
-            }
-            else{
-                System.out.println("No token Bird...");
+                                startActivity(new Intent(MainActivity.this, Map.class));
+                                finish();
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w("LOGIN", "signInWithEmail:failure", task.getException());
+                                Toast.makeText(MainActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
 
-
-
-            }
-
-
-
+                            // ...
+                        }
+                    });
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, "Please enter all information.",
+                    Toast.LENGTH_SHORT).show();
         }
-        catch(Exception e){
-            System.out.println(e.getMessage());
-        }
+
+    }
+
+    protected void launchRegistration(View view) {
+        System.out.println("LAUNCH REGISTRATION");
+        Intent launchRegistration = new Intent(this, RegistrationActivity.class);
+        startActivity(launchRegistration);
     }
 
     @Override
