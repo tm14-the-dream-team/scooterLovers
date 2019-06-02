@@ -60,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("No token Bird...");
 
             }
+            Lime lime = new Lime(loc);
+            System.out.println("ADDING LIME GET VEHICLES REQ .....");
+            requestQueue.add(lime.getVehicleReq());
+
+
 
         }
         catch(Exception e){
