@@ -79,9 +79,10 @@ public class Bird {
                 birds.add(veh);
             }
         }
-        for(int i=0;i<birds.size();++i){
+/*        for(int i=0;i<birds.size();++i){
             System.out.println(birds.get(i));
         }
+        */
 
     }
 
