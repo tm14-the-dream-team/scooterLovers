@@ -18,6 +18,10 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,8 +36,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+
 
 import java.util.HashMap;
+import java.util.List;
 
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
@@ -56,6 +68,16 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private FirebaseAuth mAuth;
     private Button gpsButton;
 
+
+    private Location currentLocation = new Location("dummyprovider");
+
+
+
+
+    Cache cache;
+    Network network;
+    RequestQueue requestQueue;
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
@@ -75,8 +97,58 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         }
 
+        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);//1MB
+        network = new BasicNetwork(new HurlStack());
+        requestQueue = new RequestQueue(cache,network);
+        requestQueue.start();
+        try {
+            //Bird bird = new Bird("ZSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
+            final Bird bird = new Bird();
+
+           // bird.setLocation(currentLocation);
+
+            bird.setBirdListener(new Bird.BirdListener() {
+                @Override
+                public void onObjectReady(String title) {
+                    //code to handle object ready
+                }
+
+                @Override
+                public void onDataLoaded(List birdList) {
+                    // Code to handle data loaded from network
+                    // Use the data here!
+
+                    if(!bird.getToken().equals("none")){
 
 
+                        System.out.println("Token assigned Printing request..");
+                        System.out.println(bird.getVehicleReq());
+                        requestQueue.add(bird.getInitReq());
+                        requestQueue.add(bird.getVehicleReq());
+
+                    }
+                    else{
+                        System.out.println("No token Bird...");
+                    }
+                    System.out.println(bird.getBirds());
+                    System.out.println("############################");
+                    System.out.println("############################");
+                    System.out.println("############################");
+                    System.out.println("############################");
+                    System.out.println("############################");
+                    System.out.println("###########LAST ONE#########");
+
+
+                }
+            });
+
+
+
+
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
 
 
     }
@@ -248,7 +320,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
-                            Location currentLocation = (Location) task.getResult();
+                            currentLocation = (Location) task.getResult();
 
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);

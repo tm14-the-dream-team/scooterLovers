@@ -2,6 +2,8 @@ package com.example.rightprice;
 
 import android.app.Service;
 import android.content.Intent;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.IBinder;
 
 
@@ -20,21 +22,46 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Bird {
+public class Bird{
+
+
+    private List<Vehicle>birds;
+    private JsonObjectRequest initReq;
+    private String token;
+    private String id;
+    private String expiration;
+    private String email;
+    private Location loc = new Location("GaryIsMyDad");
+
+
+
+    public interface BirdListener{
+        public void onObjectReady(String title);
+
+        public void onDataLoaded(List birdList);
+
+
+    }
+
+    private BirdListener listener;
+
+    public Bird() throws JSONException {
+
+        this.listener = null;
+        loadDataAsync();
+
+    }
+
+    // Assign the listener implementing events interface that will receive the events
+    public void setBirdListener(BirdListener listener) {
+        this.listener = listener;
+    }
 
 
 
     public List<Vehicle> getBirds() {
         return birds;
     }
-
-    private List<Vehicle>birds;
-
-    private JsonObjectRequest initReq;
-    private String token;
-    private String id;
-    private String expiration;
-    private String email;
 
     public JsonObjectRequest getVehicleReq() {
         return vehicleReq;
@@ -53,6 +80,16 @@ public class Bird {
     public String getExpiration() {
         return expiration;
     }
+
+
+    public void setLocation(Location location){
+        loc = location;
+    }
+
+
+
+
+
     private void generateVehicles(JSONObject resp) throws JSONException {
         birds = new ArrayList<Vehicle>();
         JSONArray items = resp.getJSONArray("birds");
@@ -73,7 +110,7 @@ public class Bird {
                 bat = Integer.parseInt(current.getString("battery_level"));
                 id = current.getString("id");
 
-                Vehicle veh = new Vehicle("bird",id,bat,lat,lng,"$1 to unlock $0.27/min");
+                Vehicle veh = new Vehicle("bird",id,bat,lat,lng,"$1 to unlock $0.27 / 1 min");
                 veh.setType("scooter");
                 System.out.print(veh);
 
@@ -87,17 +124,28 @@ public class Bird {
     }
 
 
+
+
+
+
+
+
     //HARD CODED CONSTRUCTOR
-    public Bird(final Location loc) throws JSONException {
+    public void loadDataAsync() throws JSONException {
         email ="johnathan@ucsd.com";
         id="eee4913d-078e-4f13-8bd6-87d3245a3fb0";
         //token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
         token="Bird eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
+        loc.setLatitude(32.880277);
+        loc.setLongitude(-117.237552);
+
+        generateVehicleReq(loc,1000);
+
+
+
         JSONObject obj = new JSONObject();
         String url = "https://api.bird.co/user/login";
         obj.put("email",email);
-        generateVehicleReq(loc,1000);
-
         Response.ErrorListener onErr = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -129,6 +177,7 @@ public class Bird {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
 
 
             }
@@ -213,17 +262,17 @@ public class Bird {
                 locH+= "\"speed\":"+ -1 + ",";
                 locH+= "\"heading\":"+ -1;
 */
-                      //{"latitude":32.888532,
+                //{"latitude":32.888532,
                 locH+= "\"latitude\":"+point.getLatitude()+",";
-                      // "longitude":-117.240903,
+                // "longitude":-117.240903,
                 locH+= "\"longitude\":"+point.getLongitude()+",";
-                      // "altitude":0,
+                // "altitude":0,
                 locH+= "\"altitude\":"+ 0 + ",";
-                      // "accuracy":100,
+                // "accuracy":100,
                 locH+= "\"accuracy\":"+ 100 + ",";
-                      // "speed":-1,
+                // "speed":-1,
                 locH+= "\"speed\":"+ -1 + ",";
-                      // "heading":-1}
+                // "heading":-1}
                 locH+= "\"heading\":"+ -1;
                 locH+= "}";
 
@@ -280,7 +329,7 @@ public class Bird {
                     tokens are only sent back if the email passed in is sent for the very
                     first time
                    */
-                  System.out.println("NO TOKEN FROM BIRD");
+                    System.out.println("NO TOKEN FROM BIRD");
                 }
                 if (response.has("id")) {
                     try {

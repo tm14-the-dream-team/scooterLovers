@@ -2,6 +2,7 @@ package com.example.rightprice;
 
 import android.app.Service;
 import android.content.Intent;
+import android.location.Location;
 import android.os.IBinder;
 
 
