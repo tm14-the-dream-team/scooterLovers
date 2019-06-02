@@ -435,4 +435,114 @@
         </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/popup_layer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/popup_service"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:background="#009688"
+            android:gravity="bottom|center"
+            android:text="Service"
+            android:textSize="30sp" />
+
+        <LinearLayout
+            android:id="@+id/popup_info_layer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:background="#009688"
+            android:gravity="bottom|center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/popup_battery_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Battery"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/popup_battery_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="100%"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/popup_start_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="To Start"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/popup_start_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="$5.00"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/popup_minute_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Per Minute"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/popup_minute_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="$0.15"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/popup_button_layer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:background="#009688"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/start_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:gravity="center"
+                android:text="Start Ride" />
+
+            <Button
+                android:id="@+id/close_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:gravity="center"
+                android:text="Close" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 </FrameLayout>
