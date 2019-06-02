@@ -1,6 +1,5 @@
 package com.example.rightprice;
 
-import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -40,12 +39,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
-
-import java.util.ArrayList;
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -63,7 +60,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private ToggleButton scooFilter;
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
-    private ToggleButton logoutButton;
+    private Button logoutButton;
     private FirebaseAuth mAuth;
     private Button gpsButton;
 
@@ -104,7 +101,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
-    //marker implementation in progress
+    //marker implementation
     private ArrayList<Vehicle> vehicleArrayList;
     private ArrayList<Marker> markerArrayList;
     float spinColor = BitmapDescriptorFactory.HUE_ORANGE;
@@ -419,35 +416,29 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mMap.addMarker(new MarkerOptions().position(central_campus).title("Geisel"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(central_campus,16.0f));
 
-        //marker fun initialize the vehicles.
-        Vehicle bird = new Vehicle();
-        bird.setLat(32.8797);
-        bird.setLng(-117.2362);
-        bird.setVendor("bird");
-        bird.setBattery(50);
-        bird.setMinutePrice(0.15);
-        bird.setStartPrice(1.00);
-        LatLng bird_pos = new LatLng(32.8797, -117.2362);
-        Vehicle lime = new Vehicle();
-        lime.setLat(32.8785);
-        lime.setLng(-117.2397);
-        lime.setVendor("lime");
-        lime.setBattery(100);
-        lime.setMinutePrice(0.20);
-        lime.setStartPrice(1.50);
-        LatLng lime_pos = new LatLng(32.8785, -117.2397);
-        Vehicle spin = new Vehicle();
-        spin.setLat(32.8851);
-        spin.setLng(-117.2392);
-        spin.setVendor("spin");
-        spin.setBattery(69);
-        spin.setStartPrice(2.00);
-        spin.setMinutePrice(0.25);
-        LatLng spin_pos = new LatLng(32.8851, -117.2392);
-        vehicleArrayList.add(bird);
-        vehicleArrayList.add(lime);
-        vehicleArrayList.add(spin);
-        this.loadVehiclePins(mMap,vehicleArrayList,markerArrayList);
+        //marker fun initialize the dummy vehicles.
+//        Vehicle bird = new Vehicle();
+//        bird.setLat(32.8797);
+//        bird.setLng(-117.2362);
+//        bird.setVendor("bird");
+//        bird.setBattery(50);
+//        LatLng bird_pos = new LatLng(32.8797, -117.2362);
+//        Vehicle lime = new Vehicle();
+//        lime.setLat(32.8785);
+//        lime.setLng(-117.2397);
+//        lime.setVendor("lime");
+//        lime.setBattery(100);
+//        LatLng lime_pos = new LatLng(32.8785, -117.2397);
+//        Vehicle spin = new Vehicle();
+//        spin.setLat(32.8851);
+//        spin.setLng(-117.2392);
+//        spin.setVendor("spin");
+//        spin.setBattery(69);
+//        LatLng spin_pos = new LatLng(32.8851, -117.2392);
+//        vehicleArrayList.add(bird);
+//        vehicleArrayList.add(lime);
+//        vehicleArrayList.add(spin);
+//        this.loadVehiclePins(mMap,vehicleArrayList,markerArrayList);
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -456,9 +447,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     // Populates popup layer
                     Vehicle vehicle = (Vehicle)marker.getTag();
                     serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
-                    startValue.setText("$"+Double.toString(vehicle.getStartPrice()));
-                    minuteValue.setText("$"+Double.toString(vehicle.getMinutePrice()));
-                    batteryValue.setText(Integer.toString(vehicle.getBattery())+"%");
                     popupLayer.setVisibility(View.VISIBLE);
                 }
                 return true; //suppresses default behavior. false uses default.
