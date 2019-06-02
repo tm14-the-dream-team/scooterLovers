@@ -125,8 +125,18 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    if (documentSnapshot.getBoolean("birdAdded"))
-                        birdButton.toggle();
+                    try {
+                        if (documentSnapshot.getBoolean("birdAdded"))
+                            birdButton.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+
+                    }
                 } else {
                     System.err.println("No such document!");
                 }
