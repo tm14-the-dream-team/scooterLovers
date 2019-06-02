@@ -1,7 +1,7 @@
 package com.example.rightprice;
 
 class Vehicle {
-        public int getLat() {
+        public double getLat() {
                 return lat;
         }
 
@@ -9,7 +9,7 @@ class Vehicle {
                 this.lat = lat;
         }
 
-        public int getLng() {
+        public double getLng() {
                 return lng;
         }
 
@@ -33,39 +33,38 @@ class Vehicle {
                 this.battery = battery;
         }
 
-        public int getStartPrice() {
-                return startPrice;
-        }
 
-        public void setStartPrice(int startPrice) {
-                this.startPrice = startPrice;
-        }
 
-        public int getMinutePrice() {
-                return minutePrice;
-        }
 
-        public void setMinutePrice(int minutePrice) {
-                this.minutePrice = minutePrice;
-        }
-
-        public int getTimeLimit() {
-                return timeLimit;
-        }
-
-        public void setTimeLimit(int timeLimit) {
-                this.timeLimit = timeLimit;
-        }
-
-        private int lat;
-        private int lng;
+        private double lat;
+        private double lng;
         private String vendor;
         private String id;
+        private String type;
         private int battery;
-        private int startPrice;
-        private int minutePrice;
-        private int timeLimit;
+        private String price;
+
+        public String toString(){
+                return "Vendor: "+vendor+", id: "+id+", location: ("+lat+","+lng+"), battery: "+battery+" Price: "+price;
+        }
+
+        public Vehicle(String vendor, String id, int battery, double lat, double lng, String price){
+                this.vendor = vendor;
+                this.id = id;
+                this.battery = battery;
+                this.lat = lat;
+                this.lng = lng;
+                this.price = price;
 
 
+        }
 
+
+        public String getType() {
+                return type;
+        }
+
+        public void setType(String type) {
+                this.type = type;
+        }
 }
