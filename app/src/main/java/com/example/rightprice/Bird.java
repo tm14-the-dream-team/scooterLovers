@@ -2,6 +2,7 @@ package com.example.rightprice;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.IBinder;
 
 
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Bird {
+public class Bird{
 
 
     private List<Vehicle>birds;
@@ -29,6 +30,30 @@ public class Bird {
     private String id;
     private String expiration;
     private String email;
+    private Location loc;
+
+    public interface BirdListener{
+        public void onObjectReady(String title);
+
+        public void onDataLoaded(List birdList);
+
+
+    }
+
+    private BirdListener listener;
+
+    public Bird() throws JSONException {
+        this.listener = null;
+        loadDataAsync();
+
+    }
+
+    // Assign the listener implementing events interface that will receive the events
+    public void setBirdListener(BirdListener listener) {
+        this.listener = listener;
+    }
+
+
 
     public List<Vehicle> getBirds() {
         return birds;
@@ -51,6 +76,15 @@ public class Bird {
     public String getExpiration() {
         return expiration;
     }
+
+
+    public void setLocation(Location location){
+        loc = location;
+    }
+
+
+
+
 
     private void generateVehicles(JSONObject resp) throws JSONException {
         birds = new ArrayList<Vehicle>();
@@ -86,8 +120,14 @@ public class Bird {
     }
 
 
+
+
+
+
+
+
     //HARD CODED CONSTRUCTOR
-    public Bird(final Location loc) throws JSONException {
+    public void loadDataAsync() throws JSONException {
         email ="johnathan@ucsd.com";
         id="eee4913d-078e-4f13-8bd6-87d3245a3fb0";
         //token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";

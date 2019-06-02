@@ -13,6 +13,10 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 
+import org.json.JSONException;
+
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     //Context context = this.getApplicationContext();
     Cache cache;
@@ -30,58 +34,6 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("IT WORKED");
         Intent launchMap = new Intent(this, Map.class);
         startActivity(launchMap);
-        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);//1MB
-        network = new BasicNetwork(new HurlStack());
-        requestQueue = new RequestQueue(cache,network);
-        requestQueue.start();
-        try {
-            Location loc = new Location();
-            loc.setLatitude(32.880277);
-            loc.setLongitude(-117.237552);
-            //Bird bird = new Bird("ZSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
-            Bird bird = new Bird(loc);
-            /**
-             * USER MUST HAVE CURRENTLY EXISTING LIME ACCOUNT ASSOCIATED WITH
-             * THE PHONE NUMBER PASSED BELOW
-             */
-            //requestQueue.add(bird.getInitReq());
-            System.out.println("------------OKKKKKK--------------");
-            //Lime lime = new Lime("19493713971");//
-            //requestQueue.add(lime.getInitReq());
 
-            if(!bird.getToken().equals("none")){
-                System.out.println("Token assigned Printing request..");
-                System.out.println(bird.getVehicleReq());
-                requestQueue.add(bird.getInitReq());
-                requestQueue.add(bird.getVehicleReq());
-
-            }
-            else{
-                System.out.println("No token Bird...");
-
-            }
-            Lime lime = new Lime(loc);
-            System.out.println("ADDING LIME GET VEHICLES REQ .....");
-            requestQueue.add(lime.getVehicleReq());
-
-            System.out.println("-------------------");
-            System.out.println("-------------------");
-            System.out.println("-------------------");
-            System.out.println("HERE ARE THE BIRDS");
-            System.out.println("-------------------");
-            System.out.println("-------------------");
-            Thread.sleep(10000);
-            System.out.println(bird.getBirds());
-            System.out.println("############################");
-            System.out.println("############################");
-            System.out.println("############################");
-            System.out.println("############################");
-            System.out.println("############################");
-
-
-        }
-        catch(Exception e){
-            System.out.println(e.getMessage());
-        }
     }
 }
