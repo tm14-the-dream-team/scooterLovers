@@ -45,7 +45,7 @@ class Vehicle {
         private String price;
 
         public String toString(){
-                return "Vendor: "+vendor+", id: "+id+", location: ("+lat+","+lng+"), battery: "+battery+" Price: "+price;
+                return "Vendor: "+vendor+", id: "+id+", location: ("+lat+","+lng+"), battery: "+battery+" Price: "+price + ", type:"+type;
         }
 
         public Vehicle(String vendor, String id, int battery, double lat, double lng, String price){

@@ -39,16 +39,16 @@ public class MainActivity extends AppCompatActivity {
             loc.setLatitude(32.880277);
             loc.setLongitude(-117.237552);
             //Bird bird = new Bird("ZSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
-            Bird bird = new Bird(loc);
+            //Bird bird = new Bird(loc);
             /**
              * USER MUST HAVE CURRENTLY EXISTING LIME ACCOUNT ASSOCIATED WITH
              * THE PHONE NUMBER PASSED BELOW
              */
             //requestQueue.add(bird.getInitReq());
-            System.out.println("------------OKKKKKK--------------");
+            //System.out.println("------------OKKKKKK--------------");
             //Lime lime = new Lime("19493713971");//
             //requestQueue.add(lime.getInitReq());
-
+/*
             if(!bird.getToken().equals("none")){
                 System.out.println("Token assigned Printing request..");
                 System.out.println(bird.getVehicleReq());
@@ -79,7 +79,13 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("############################");
             System.out.println("############################");
             System.out.println("###########LAST ONE#########");
+            */
         Spin spin = new Spin(loc);
+        requestQueue.add(spin.getInitReq());
+        for (int i=0;i<100000;++i){
+
+        }
+        spin.generateVehicleReq(loc);
         requestQueue.add(spin.getVehicleReq());
 
 
