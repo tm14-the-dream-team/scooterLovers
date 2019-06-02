@@ -102,16 +102,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         requestQueue = new RequestQueue(cache,network);
         requestQueue.start();
         try {
-            //Bird bird = new Bird("ZSofjd'oiohshsdkjdslkdfjngdflkg@ucsd.com",loc);
+
             final Bird bird = new Bird();
 
-           // bird.setLocation(currentLocation);
 
-            bird.setBirdListener(new Bird.BirdListener() {
-                @Override
-                public void onObjectReady(String title) {
-                    //code to handle object ready
-                }
 
                 @Override
                 public void onDataLoaded(List birdList) {
