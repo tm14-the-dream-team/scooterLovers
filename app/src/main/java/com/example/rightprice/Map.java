@@ -62,6 +62,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
     private Button logoutButton;
+    private Button resetButton;
     private FirebaseAuth mAuth;
     private Button gpsButton;
 
@@ -335,22 +336,16 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 finish();
             }
         });
-        servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
-        servicesLayer.setVisibility(View.INVISIBLE);
 
-
-
-        // Shows settings when pressing the Settings Button
-        settingsButton.setOnClickListener(new View.OnClickListener() {
+        resetButton = (Button) findViewById(R.id.reset_button);
+        resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                if (servicesLayer.getVisibility()==View.VISIBLE) {
-                    servicesLayer.setVisibility(View.INVISIBLE);
-                } else {
-                    servicesLayer.setVisibility(View.VISIBLE);
-                }
+                Intent forgotPassView = new Intent(Map.this, ForgotPassActivity.class);
+                startActivity(forgotPassView);
             }
         });
+
 
         //add or delete bird
         birdButton.setOnClickListener(new View.OnClickListener() {
@@ -472,14 +467,26 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-
-        //handle price filter
-
-
-        //handle services filter
+        servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
+        servicesLayer.setVisibility(View.INVISIBLE);
 
         filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
         filterOptionsLayer.setVisibility(View.INVISIBLE);
+
+        // Shows settings when pressing the Settings Button
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                if (servicesLayer.getVisibility()==View.VISIBLE) {
+                    servicesLayer.setVisibility(View.INVISIBLE);
+                } else {
+                    servicesLayer.setVisibility(View.VISIBLE);
+                    filterOptionsLayer.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        //handle services filter
         // Shows filter menu when pressing the filter Button
         filterButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -488,6 +495,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     filterOptionsLayer.setVisibility(View.INVISIBLE);
                 } else {
                     filterOptionsLayer.setVisibility(View.VISIBLE);
+                    servicesLayer.setVisibility(View.INVISIBLE);
                 }
             }
         });

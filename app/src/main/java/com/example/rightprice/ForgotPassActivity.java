@@ -1,6 +1,7 @@
 package com.example.rightprice;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,27 +18,30 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPassActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    Button nextBtn;
+    Button nextBtn, backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_forgotpass);
 
         nextBtn = (Button) findViewById(R.id.nextbtn);
-        nextBtn.setOnClickListener(new View.OnClickListener() {
+        backBtn = (Button) findViewById(R.id.backbtn);
+
+        backBtn.setVisibility(View.INVISIBLE);
+        backBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if(nextBtn.getText().equals("SEND")){
-                    sendEmail();
-
-                } else {
-                    Intent home = new Intent(ForgotPassActivity.this, MainActivity.class);
-                    startActivity(home);
-                }
-
+                finish();
             }
         });
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sendEmail();
+            }
+        });
+
+
     }
 
     protected void sendEmail() {
@@ -45,20 +49,26 @@ public class ForgotPassActivity extends AppCompatActivity {
         String email = emailText.getText().toString();
 
         mAuth = FirebaseAuth.getInstance();
-        mAuth.sendPasswordResetEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("SEND EMAIL", "Email sent.");
-                            Toast.makeText(ForgotPassActivity.this, "Email Sent.",
-                                    Toast.LENGTH_SHORT).show();
-                            nextBtn.setText("BACK");
-                        } else {
-                            Toast.makeText(ForgotPassActivity.this, "Email Not Sent.",
-                                    Toast.LENGTH_SHORT).show();
+        try {
+            mAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("SEND EMAIL", "Email sent.");
+                                Toast.makeText(ForgotPassActivity.this, "Email Sent.",
+                                        Toast.LENGTH_SHORT).show();
+                                nextBtn.setVisibility(View.INVISIBLE);
+                                backBtn.setVisibility(View.VISIBLE);
+                            } else {
+                                Toast.makeText(ForgotPassActivity.this, "Email Not Sent.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+        } catch (Exception e){
+            Toast.makeText(ForgotPassActivity.this, "Please enter all information.",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 }
