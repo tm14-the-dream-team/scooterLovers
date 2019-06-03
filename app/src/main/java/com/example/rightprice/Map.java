@@ -3,7 +3,8 @@ package com.example.rightprice;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -316,9 +318,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     //marker implementation
     private ArrayList<Vehicle> vehicleArrayList;
     private ArrayList<Marker> markerArrayList;
-    float spinColor = BitmapDescriptorFactory.HUE_ORANGE;
-    float limeColor = BitmapDescriptorFactory.HUE_GREEN;
-    float birdColor = BitmapDescriptorFactory.HUE_AZURE;
     //popup window implementation
     private TextView serviceLabel;
     private TextView batteryValue;
@@ -451,8 +450,41 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         //start of button initialization
 
         birdFilter = findViewById(R.id.vehicle_bird_toggle);
+        birdFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByService(markerArrayList,"bird",false);
+                } else {
+                    // The toggle is disabled
+                    filterByService(markerArrayList,"bird",true);
+                }
+            }
+        });
         limeFilter = findViewById(R.id.vehicle_lime_toggle);
+        limeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByService(markerArrayList,"lime",false);
+                } else {
+                    // The toggle is disabled
+                    filterByService(markerArrayList,"lime",true);
+                }
+            }
+        });
         spinFilter = findViewById(R.id.vehicle_spin_toggle);
+        spinFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByService(markerArrayList,"spin",false);
+                } else {
+                    // The toggle is disabled
+                    filterByService(markerArrayList,"spin",true);
+                }
+            }
+        });
 
         DocumentReference filtersRef = db.collection("Users").document(user.getUid());
         filtersRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -534,7 +566,29 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         //maxPrice find
         bikeFilter = findViewById(R.id.service_bike_toggle);
+        bikeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByVehicle(markerArrayList,"bicycle",false);
+                } else {
+                    // The toggle is disabled
+                    filterByVehicle(markerArrayList,"bicycle",true);
+                }
+            }
+        });
         scooFilter = findViewById(R.id.service_scooter_toggle);
+        scooFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByVehicle(markerArrayList,"scooter",false);
+                } else {
+                    // The toggle is disabled
+                    filterByVehicle(markerArrayList,"scooter",true);
+                }
+            }
+        });
 
         logoutButton = (Button) findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -824,67 +878,64 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 }
             }
         }
-        // Add a marker in ucsd and move the camera
-        final LatLng central_campus = new LatLng(32.880283, -117.237556);
-        mMap.addMarker(new MarkerOptions().position(central_campus).title("Geisel"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(central_campus,16.0f));
-
-
-
-        //marker fun initialize the dummy vehicles.
-//        Vehicle bird = new Vehicle();
-//        bird.setLat(32.8797);
-//        bird.setLng(-117.2362);
-//        bird.setVendor("bird");
-//        bird.setBattery(50);
-//        LatLng bird_pos = new LatLng(32.8797, -117.2362);
-//        Vehicle lime = new Vehicle();
-//        lime.setLat(32.8785);
-//        lime.setLng(-117.2397);
-//        lime.setVendor("lime");
-//        lime.setBattery(100);
-//        LatLng lime_pos = new LatLng(32.8785, -117.2397);
-//        Vehicle spin = new Vehicle();
-//        spin.setLat(32.8851);
-//        spin.setLng(-117.2392);
-//        spin.setVendor("spin");
-//        spin.setBattery(69);
-//        LatLng spin_pos = new LatLng(32.8851, -117.2392);
-//        vehicleArrayList.add(bird);
-//        vehicleArrayList.add(lime);
-//        vehicleArrayList.add(spin);
-//        this.loadVehiclePins(mMap,vehicleArrayList,markerArrayList);
-
 
     }
 
     public void loadVehiclePins(GoogleMap googleMap, ArrayList<Vehicle> vehicleArrayList, ArrayList<Marker> markerArrayList){
         for(int i = 0; i < vehicleArrayList.size(); i++){
-            LatLng pos = new LatLng( vehicleArrayList.get(i).getLat(), vehicleArrayList.get(i).getLng());
-            String vendor = vehicleArrayList.get(i).getVendor();
-            float color;
+            Vehicle vehicle = vehicleArrayList.get(i);
+            LatLng pos = new LatLng( vehicle.getLat(), vehicle.getLng());
+            String vendor = vehicle.getVendor();
+            String icon;
             switch(vendor) {
                 case "bird":
-                    color = birdColor;
+                    icon = "bird_scooter";
                     break;
                 case "spin":
-                    color = spinColor;
+                    if(vehicle.getType()=="scooter") {
+                        icon = "spin_scooter";
+                    } else {
+                        icon = "spin_bike";
+                    }
                     break;
                 case "lime":
-                    color = limeColor;
+                    icon = "lime_scooter";
                     break;
                 default:
                     System.out.print("What the fuck");
-                    color = BitmapDescriptorFactory.HUE_VIOLET;
+                    icon = "logo";
             }
             Marker marker = googleMap.addMarker(new MarkerOptions().position(pos)
-                    .icon(BitmapDescriptorFactory
-                            .defaultMarker(color)));
-            marker.setTag(vehicleArrayList.get(i)); //adds vehicle to the marker.
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(icon,100,100))));
+            marker.setTag(vehicle); //adds vehicle to the marker.
             markerArrayList.add(marker);
         }
     }
 
+    public Bitmap resizeMapIcons(String iconName, int width, int height){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
+    }
 
+    public void filterByService(ArrayList<Marker> markerArrayList, String vendor, boolean setAs){
+        for(int i = 0; i < markerArrayList.size(); i++){
+            Marker marker = markerArrayList.get(i);
+            Vehicle vehicle = (Vehicle) marker.getTag();
+            if(vehicle.getVendor().equals(vendor)){
+                marker.setVisible(setAs);
+            }
+        }
+    }
+
+    public void filterByVehicle(ArrayList<Marker> markerArrayList, String type, boolean setAs){
+        for(int i = 0; i < markerArrayList.size(); i++){
+            Marker marker = markerArrayList.get(i);
+            Vehicle vehicle = (Vehicle) marker.getTag();
+            if(vehicle.getType().equals(type)){
+                marker.setVisible(setAs);
+            }
+        }
+    }
 
 }
