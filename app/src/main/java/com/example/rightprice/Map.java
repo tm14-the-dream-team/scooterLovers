@@ -87,7 +87,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         mMap = googleMap;
-
+        mMap.setPadding(0, 160, 0, 0);
         if (mLocationPermissionsGranted) {
             getDeviceLocation();
 
@@ -97,7 +97,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 return;
             }
             mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            //mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
