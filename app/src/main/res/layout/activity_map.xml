@@ -324,14 +324,14 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/popup_service"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:background="#009688"
-            android:gravity="bottom|center"
-            android:text="Service"
-            android:textSize="30sp" />
+        android:id="@+id/popup_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:background="#009688"
+        android:gravity="bottom|center"
+        android:text="Service"
+        android:textSize="30sp" />
 
         <LinearLayout
             android:id="@+id/popup_info_layer"

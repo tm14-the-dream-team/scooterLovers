@@ -88,7 +88,7 @@ public class Spin {
                 bat = -1;
                 rate = "$1 for 30 mins";
             }
-            Vehicle veh = new Vehicle("spin",id,bat,lat,lng,rate);
+            Vehicle veh = new Vehicle("spin",id,bat,lat,lng,rate,"$0");
             veh.setType(type);
             spins.add(veh);
         }

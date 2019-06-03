@@ -192,7 +192,7 @@ public class Lime {
 
 
             //public Vehicle(String vendor, String id, int battery, double lat, double lng, String price)
-            Vehicle veh = new Vehicle("lime", id, bat, lat, lng, rate);
+            Vehicle veh = new Vehicle("lime", id, bat, lat, lng, rate,"$0");
             veh.setType(type);
             limes.add(veh);
 

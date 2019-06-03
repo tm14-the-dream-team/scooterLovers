@@ -3,7 +3,6 @@ package com.example.rightprice;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,7 +11,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -98,18 +100,118 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         }
+
+        private View.OnTouchListener handleTouch = new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        Log.i("TAG", "touched down");
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        Log.i("TAG", "moving: (" + x + ", " + y + ")");
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        Log.i("TAG", "touched up");
+                        break;
+                }
+
+                return true;
+            }
+        };
+
+        if(mMap != null){
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                @Override
+                public View getInfoWindow(Marker marker) {
+                    return null;
+                }
+
+
+
+                @Override
+                public ViewGroup getInfoContents(Marker marker) {
+                    ViewGroup v = (ViewGroup)getLayoutInflater().inflate(R.layout.info_window, null);
+
+                    LinearLayout parent = (LinearLayout)findViewById(R.id.TB);
+                    DrawView drawView = new DrawView(this);
+
+
+                    TextView TBservice = (TextView) v.findViewById(R.id.TB_service);
+                    TextView TBbattery = (TextView) v.findViewById(R.id.TB_battery);
+                    TextView TBbattery_val = (TextView) v.findViewById(R.id.TB_battery_val);
+                    TextView TBstart = (TextView) v.findViewById(R.id.TB_start);
+                    TextView TBstart_val = (TextView) v.findViewById(R.id.TB_start_val);
+                    TextView TBminute = (TextView) v.findViewById(R.id.TB_minute);
+                    TextView TBminute_val = (TextView) v.findViewById(R.id.TB_minute_val);
+
+                    Button TBstartB = (Button) v.findViewById(R.id.TB_start_button);
+                    Button TBcancelB = (Button) v.findViewById(R.id.TB_close_button);
+
+                    TBservice.setText(marker.getTitle());
+                    Vehicle vehicle = (Vehicle) marker.getTag();
+                    TBbattery_val.setText(Integer.toString(vehicle.getBattery()));
+                    TBstart_val.setText(vehicle.getSPrice());
+                    TBminute_val.setText(vehicle.getMPrice());
+
+                    //Button infoButton =
+
+                    return v;
+                }
+            });
+
+
+        }
+/*
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+
+                mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                    @Override
+                    public View getInfoWindow(Marker marker) {
+                        return null;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        View v = getLayoutInflater().inflate(R.layout.info_window, null);
+
+
+
+                        TextView TBservice = (TextView) v.findViewById(R.id.TB_service);
+                        TextView TBbattery = (TextView) v.findViewById(R.id.TB_battery);
+                        TextView TBbattery_val = (TextView) v.findViewById(R.id.TB_battery_val);
+                        TextView TBstart = (TextView) v.findViewById(R.id.TB_start);
+                        TextView TBstart_val = (TextView) v.findViewById(R.id.TB_start_val);
+                        TextView TBminute = (TextView) v.findViewById(R.id.TB_minute);
+                        TextView TBminute_val = (TextView) v.findViewById(R.id.TB_minute_val);
+
+                        //TBservice.setText("");
+
+
+                        return v;
+                    }
+                });
+
+                /*
                 if(marker.getTag() != null ){
                     // Populates popup layer
                     Vehicle vehicle = (Vehicle)marker.getTag();
                     serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
                     popupLayer.setVisibility(View.VISIBLE);
                 }
+
                 return true; //suppresses default behavior. false uses default.
             }
         });
+        */
+
 
         cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);
         network = new BasicNetwork(new HurlStack());
@@ -733,6 +835,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     color = BitmapDescriptorFactory.HUE_VIOLET;
             }
             Marker marker = googleMap.addMarker(new MarkerOptions().position(pos)
+                    .title(vendor)
+                    .snippet("V is here")
                     .icon(BitmapDescriptorFactory
                             .defaultMarker(color)));
             marker.setTag(vehicleArrayList.get(i)); //adds vehicle to the marker.

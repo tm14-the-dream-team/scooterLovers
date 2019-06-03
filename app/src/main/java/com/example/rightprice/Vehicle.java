@@ -33,6 +33,25 @@ class Vehicle {
                 this.battery = battery;
         }
 
+        public String getMPrice() {
+                return Mprice;
+        }
+
+        public void setMPrice(String Mprice) {
+                this.Mprice = Mprice;
+        }
+
+        public String getSPrice() {
+        return Sprice;
+    }
+
+        public void setSPrice(String Mprice) {
+        this.Sprice = Sprice;
+    }
+
+
+
+
 
 
 
@@ -42,19 +61,21 @@ class Vehicle {
         private String id;
         private String type;
         private int battery;
-        private String price;
+        private String Sprice;
+        private String Mprice;
 
         public String toString(){
-                return "Vendor: "+vendor+", id: "+id+", location: ("+lat+","+lng+"), battery: "+battery+" Price: "+price;
+                return "Vendor: "+vendor+", id: "+id+", location: ("+lat+","+lng+"), battery: "+battery+" Price: "+Sprice;
         }
 
-        public Vehicle(String vendor, String id, int battery, double lat, double lng, String price){
+        public Vehicle(String vendor, String id, int battery, double lat, double lng, String Mprice,String Sprice){
                 this.vendor = vendor;
                 this.id = id;
                 this.battery = battery;
                 this.lat = lat;
                 this.lng = lng;
-                this.price = price;
+                this.Sprice = Sprice;
+                this.Mprice = Mprice;
 
 
         }
