@@ -1,9 +1,9 @@
 package com.example.rightprice;
 
-import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -25,7 +26,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,11 +40,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
-
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -50,12 +53,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private ToggleButton birdButton;
     private ToggleButton limeButton;
     private ToggleButton spinButton;
-    private Button birdFilter;
-    private Button limeFilter;
-    private Button spinFilter;
+    private ToggleButton birdFilter;
+    private ToggleButton limeFilter;
+    private ToggleButton spinFilter;
     //slider initialize maxPrice
-    private Button bikeFilter;
-    private Button scooFilter;
+    private ToggleButton bikeFilter;
+    private ToggleButton scooFilter;
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
     private Button logoutButton;
@@ -99,6 +102,21 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
+    //marker implementation
+    private ArrayList<Vehicle> vehicleArrayList;
+    private ArrayList<Marker> markerArrayList;
+    float spinColor = BitmapDescriptorFactory.HUE_ORANGE;
+    float limeColor = BitmapDescriptorFactory.HUE_GREEN;
+    float birdColor = BitmapDescriptorFactory.HUE_AZURE;
+    //popup window implementation
+    private TextView serviceLabel;
+    private TextView batteryValue;
+    private TextView startValue;
+    private TextView minuteValue;
+    private Button startButton;
+    private Button closeButton;
+    private LinearLayout popupLayer;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,12 +129,16 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         FirebaseUser user = mAuth.getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        final String userUID = user.getUid();
+        final DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
+
         Toast.makeText(Map.this, user.getUid(),
                 Toast.LENGTH_SHORT).show();
 
         settingsButton = (ImageButton) findViewById(R.id.settings_button);
         filterButton = (ImageButton) findViewById(R.id.filter_button);
 
+        //check saved settings
         birdButton = findViewById(R.id.bird_toggle);
         DocumentReference birdSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Bird");
 
@@ -151,30 +173,173 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         });
 
         limeButton = findViewById(R.id.lime_toggle);
+        DocumentReference limeSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Lime");
+
+        limeSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    try {
+                        if (documentSnapshot.getBoolean("limeAdded"))
+                            limeButton.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+
+                    }
+                } else {
+                    System.err.println("No such document!");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("getCurrSettings", "getCurrSettings:failure", e);
+                Toast.makeText(Map.this, "failed to get settings.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
         spinButton = findViewById(R.id.spin_toggle);
+        DocumentReference spinSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Spin");
+
+        spinSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    try {
+                        if (documentSnapshot.getBoolean("spinAdded"))
+                            spinButton.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+
+                    }
+                } else {
+                    System.err.println("No such document!");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("getCurrSettings", "getCurrSettings:failure", e);
+                Toast.makeText(Map.this, "failed to get settings.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
         //start of button initialization
-        /*
-        birdFilter = findViewById(R.id.);
-        limeFilter = findViewById(R.id.);
-        spinFilter = findViewById(R.id.);
+
+        birdFilter = findViewById(R.id.vehicle_bird_toggle);
+        limeFilter = findViewById(R.id.vehicle_lime_toggle);
+        spinFilter = findViewById(R.id.vehicle_spin_toggle);
+
+        DocumentReference filtersRef = db.collection("Users").document(user.getUid());
+        filtersRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    try {
+                        if (documentSnapshot.getBoolean("birdFilter"))
+                            birdFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+
+                    try {
+                        if (documentSnapshot.getBoolean("limeFilter"))
+                            limeFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+
+                    try {
+                        if (documentSnapshot.getBoolean("spinFilter"))
+                            spinFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+
+                    try {
+                        if (documentSnapshot.getBoolean("bikeFilter"))
+                            bikeFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+
+                    try {
+                        if (documentSnapshot.getBoolean("scooterFilter"))
+                            scooFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+                } else {
+                    System.err.println("No such document!");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("getCurrSettings", "getCurrSettings:failure", e);
+                Toast.makeText(Map.this, "failed to get settings.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         //maxPrice find
-        bikeFilter = findViewById(R.id.);
-        scooFilter = findViewById(R.id.);
-        */
+        bikeFilter = findViewById(R.id.service_bike_toggle);
+        scooFilter = findViewById(R.id.service_scooter_toggle);
+
         logoutButton = (Button) findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 // implement logging out.
                 FirebaseAuth.getInstance().signOut();
-
                 startActivity(new Intent(Map.this, MainActivity.class));
                 finish();
-
             }
         });
         servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
         servicesLayer.setVisibility(View.INVISIBLE);
+
+
+
         // Shows settings when pressing the Settings Button
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,14 +357,14 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 //handle bird login
-                FirebaseUser user = mAuth.getCurrentUser();
-                String userUID = user.getUid();
-                DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
-
                 HashMap<String, Object> Bird = new HashMap<>();
-                Bird.put("birdAdded", true);
-                Bird.put("birdEmail", userUID + "@ucsd.com");
-
+                if(birdButton.isChecked()) {
+                    Bird.put("birdAdded", true);
+                    Bird.put("birdEmail", userUID + "@ucsd.com");
+                } else {
+                    Bird.put("birdAdded", false);
+                    Bird.put("birdEmail", userUID + "@ucsd.com");
+                }
                 userDocRef.collection("Services").document("Bird").set(Bird);
             }
         });
@@ -207,25 +372,44 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         limeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                //handle lime login
+                HashMap<String, Object> Lime = new HashMap<>();
+                if(limeButton.isChecked()) {
+                    Lime.put("limeAdded", true);
+                } else {
+                    Lime.put("limeAdded", false);
+                }
+                userDocRef.collection("Services").document("Lime").set(Lime);
             }
         });
         //add or delete spin
         spinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                //handle spin login
+                HashMap<String, Object> Spin = new HashMap<>();
+                if(spinButton.isChecked()) {
+                    Spin.put("spinAdded", true);
+                } else {
+                    Spin.put("spinAdded", false);
+                }
+                userDocRef.collection("Services").document("Spin").set(Spin);
             }
         });
 
         //some more functions for later
-        /*
-        //handle service filters
+
+        //HANDLE SERVICE FILTERS
         //filter for bird
         birdFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 //handle bird filter toggle
+                HashMap<String, Object> Bird = new HashMap<>();
+                if(birdFilter.isChecked()) {
+                    Bird.put("birdFilter", true);
+                } else {
+                    Bird.put("birdFilter", false);
+                }
+                userDocRef.update(Bird);
             }
         });
         //filter for lime
@@ -233,6 +417,13 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 //handle lime filter toggle
+                HashMap<String, Object> Lime = new HashMap<>();
+                if(limeFilter.isChecked()) {
+                    Lime.put("limeFilter", true);
+                } else {
+                    Lime.put("limeFilter", false);
+                }
+                userDocRef.update(Lime);
             }
         });
         //filter for spin
@@ -240,26 +431,47 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 //handle spin filter toggle
+                HashMap<String, Object> Spin = new HashMap<>();
+                if(spinFilter.isChecked()) {
+                    Spin.put("spinFilter", true);
+                } else {
+                    Spin.put("spinFilter", false);
+                }
+                userDocRef.update(Spin);
             }
         });
         //alter maxPrice variable
-        /*
+
         //handle vehicle filters
         //filter for bike
         bikeFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                //handle bike filter toggle
+                //handle spin filter toggle
+                HashMap<String, Object> Bike = new HashMap<>();
+                if(bikeFilter.isChecked()) {
+                    Bike.put("bikeFilter", true);
+                } else {
+                    Bike.put("bikeFilter", false);
+                }
+                userDocRef.update(Bike);
             }
         });
         //filter for scooter
         scooFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                //handle scooter filter toggle
+                //handle spin filter toggle
+                HashMap<String, Object> Scooter = new HashMap<>();
+                if(scooFilter.isChecked()) {
+                    Scooter.put("scooterFilter", true);
+                } else {
+                    Scooter.put("scooterFilter", false);
+                }
+                userDocRef.update(Scooter);
             }
         });
-         */
+
 
         //handle price filter
 
@@ -280,6 +492,30 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
+        // Added initializations for Adding pins
+        vehicleArrayList = new ArrayList<Vehicle>();
+        markerArrayList = new ArrayList<Marker>();
+        // Added Stuff for popup window
+        serviceLabel = findViewById(R.id.popup_service);
+        batteryValue = findViewById(R.id.popup_battery_value);
+        startValue = findViewById(R.id.popup_start_value);
+        minuteValue = findViewById(R.id.popup_minute_value);
+        startButton = findViewById(R.id.start_button);
+        popupLayer = findViewById(R.id.popup_layer);
+        popupLayer.setVisibility(View.INVISIBLE);
+        startButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //implement starting the bird
+            }
+        });
+        closeButton = findViewById(R.id.close_button);
+        closeButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                popupLayer.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private void getDeviceLocation(){
@@ -370,7 +606,76 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 }
             }
         }
+        // Add a marker in Sydney and move the camera
+        LatLng central_campus = new LatLng(32.880283, -117.237556);
+        mMap.addMarker(new MarkerOptions().position(central_campus).title("Geisel"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(central_campus,16.0f));
+
+        //marker fun initialize the dummy vehicles.
+//        Vehicle bird = new Vehicle();
+//        bird.setLat(32.8797);
+//        bird.setLng(-117.2362);
+//        bird.setVendor("bird");
+//        bird.setBattery(50);
+//        LatLng bird_pos = new LatLng(32.8797, -117.2362);
+//        Vehicle lime = new Vehicle();
+//        lime.setLat(32.8785);
+//        lime.setLng(-117.2397);
+//        lime.setVendor("lime");
+//        lime.setBattery(100);
+//        LatLng lime_pos = new LatLng(32.8785, -117.2397);
+//        Vehicle spin = new Vehicle();
+//        spin.setLat(32.8851);
+//        spin.setLng(-117.2392);
+//        spin.setVendor("spin");
+//        spin.setBattery(69);
+//        LatLng spin_pos = new LatLng(32.8851, -117.2392);
+//        vehicleArrayList.add(bird);
+//        vehicleArrayList.add(lime);
+//        vehicleArrayList.add(spin);
+//        this.loadVehiclePins(mMap,vehicleArrayList,markerArrayList);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker.getTag() != null ){
+                    // Populates popup layer
+                    Vehicle vehicle = (Vehicle)marker.getTag();
+                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
+                    popupLayer.setVisibility(View.VISIBLE);
+                }
+                return true; //suppresses default behavior. false uses default.
+            }
+        });
     }
+
+    public void loadVehiclePins(GoogleMap googleMap, ArrayList<Vehicle> vehicleArrayList, ArrayList<Marker> markerArrayList){
+        for(int i = 0; i < vehicleArrayList.size(); i++){
+            LatLng pos = new LatLng( vehicleArrayList.get(i).getLat(), vehicleArrayList.get(i).getLng());
+            String vendor = vehicleArrayList.get(i).getVendor();
+            float color;
+            switch(vendor) {
+                case "bird":
+                    color = birdColor;
+                    break;
+                case "spin":
+                    color = spinColor;
+                    break;
+                case "lime":
+                    color = limeColor;
+                    break;
+                default:
+                    System.out.print("What the fuck");
+                    color = BitmapDescriptorFactory.HUE_VIOLET;
+            }
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(pos)
+                    .icon(BitmapDescriptorFactory
+                            .defaultMarker(color)));
+            marker.setTag(vehicleArrayList.get(i)); //adds vehicle to the marker.
+            markerArrayList.add(marker);
+        }
+    }
+
 
 
 }

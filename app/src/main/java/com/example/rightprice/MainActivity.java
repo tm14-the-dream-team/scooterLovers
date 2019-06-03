@@ -87,11 +87,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
-
-
     }
 
-
+    protected void forgotPass(View view) {
+        Intent forgotPassView = new Intent(this, ForgotPassActivity.class);
+        startActivity(forgotPassView);
+        finish();
+    }
 
     protected void login(View view) {
         mAuth = FirebaseAuth.getInstance();
