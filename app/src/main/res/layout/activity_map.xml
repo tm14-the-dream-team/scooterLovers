@@ -359,9 +359,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:background="#009688"
+            android:background="#006A96"
             android:gravity="bottom|center"
             android:text="Service"
+            android:textColor="#FFCD00"
             android:textSize="30sp" />
 
         <LinearLayout
@@ -369,7 +370,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:background="#009688"
+            android:background="#006A96"
             android:gravity="bottom|center"
             android:orientation="horizontal">
 
@@ -380,6 +381,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Battery"
+                android:textColor="#FFCD00"
                 android:textSize="16sp" />
 
             <TextView
@@ -389,42 +391,17 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="100%"
+                android:textColor="#FFCD00"
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/popup_start_label"
+                android:id="@+id/popup_price_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:gravity="center"
-                android:text="To Start"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/popup_start_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="$5.00"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/popup_minute_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Per Minute"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/popup_minute_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="$0.15"
+                android:text="# per minute # to start"
+                android:textColor="#FFCD00"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -434,7 +411,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:background="#009688"
+            android:background="#006A96"
             android:gravity="center"
             android:orientation="horizontal">
 
