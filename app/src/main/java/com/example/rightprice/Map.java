@@ -3,6 +3,7 @@ package com.example.rightprice;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -201,12 +202,16 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         FirebaseUser user = mAuth.getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        final String userUID = user.getUid();
+        final DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
+
         Toast.makeText(Map.this, user.getUid(),
                 Toast.LENGTH_SHORT).show();
 
         settingsButton = (ImageButton) findViewById(R.id.settings_button);
         filterButton = (ImageButton) findViewById(R.id.filter_button);
 
+        //check saved settings
         birdButton = findViewById(R.id.bird_toggle);
         DocumentReference birdSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Bird");
 
@@ -241,30 +246,173 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         });
 
         limeButton = findViewById(R.id.lime_toggle);
+        DocumentReference limeSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Lime");
+
+        limeSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    try {
+                        if (documentSnapshot.getBoolean("limeAdded"))
+                            limeButton.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+
+                    }
+                } else {
+                    System.err.println("No such document!");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("getCurrSettings", "getCurrSettings:failure", e);
+                Toast.makeText(Map.this, "failed to get settings.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
         spinButton = findViewById(R.id.spin_toggle);
+        DocumentReference spinSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Spin");
+
+        spinSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    try {
+                        if (documentSnapshot.getBoolean("spinAdded"))
+                            spinButton.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+
+                    }
+                } else {
+                    System.err.println("No such document!");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("getCurrSettings", "getCurrSettings:failure", e);
+                Toast.makeText(Map.this, "failed to get settings.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
         //start of button initialization
-        /*
-        birdFilter = findViewById(R.id.);
-        limeFilter = findViewById(R.id.);
-        spinFilter = findViewById(R.id.);
+
+        birdFilter = findViewById(R.id.vehicle_bird_toggle);
+        limeFilter = findViewById(R.id.vehicle_lime_toggle);
+        spinFilter = findViewById(R.id.vehicle_spin_toggle);
+
+        DocumentReference filtersRef = db.collection("Users").document(user.getUid());
+        filtersRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    try {
+                        if (documentSnapshot.getBoolean("birdFilter"))
+                            birdFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+
+                    try {
+                        if (documentSnapshot.getBoolean("limeFilter"))
+                            limeFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+
+                    try {
+                        if (documentSnapshot.getBoolean("spinFilter"))
+                            spinFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+
+                    try {
+                        if (documentSnapshot.getBoolean("bikeFilter"))
+                            bikeFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+
+                    try {
+                        if (documentSnapshot.getBoolean("scooterFilter"))
+                            scooFilter.toggle();
+                    } catch (Exception e){
+                        Toast.makeText(Map.this, "Please create a new account." ,
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+
+                        startActivity(new Intent(Map.this, MainActivity.class));
+                        finish();
+                    }
+                } else {
+                    System.err.println("No such document!");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("getCurrSettings", "getCurrSettings:failure", e);
+                Toast.makeText(Map.this, "failed to get settings.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         //maxPrice find
-        bikeFilter = findViewById(R.id.);
-        scooFilter = findViewById(R.id.);
-        */
+        bikeFilter = findViewById(R.id.service_bike_toggle);
+        scooFilter = findViewById(R.id.service_scooter_toggle);
+
         logoutButton = (Button) findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 // implement logging out.
                 FirebaseAuth.getInstance().signOut();
-
                 startActivity(new Intent(Map.this, MainActivity.class));
                 finish();
-
             }
         });
         servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
         servicesLayer.setVisibility(View.INVISIBLE);
+
+
+
         // Shows settings when pressing the Settings Button
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -282,14 +430,14 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 //handle bird login
-                FirebaseUser user = mAuth.getCurrentUser();
-                String userUID = user.getUid();
-                DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
-
                 HashMap<String, Object> Bird = new HashMap<>();
-                Bird.put("birdAdded", true);
-                Bird.put("birdEmail", userUID + "@ucsd.com");
-
+                if(birdButton.isChecked()) {
+                    Bird.put("birdAdded", true);
+                    Bird.put("birdEmail", userUID + "@ucsd.com");
+                } else {
+                    Bird.put("birdAdded", false);
+                    Bird.put("birdEmail", userUID + "@ucsd.com");
+                }
                 userDocRef.collection("Services").document("Bird").set(Bird);
             }
         });
@@ -297,25 +445,44 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         limeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                //handle lime login
+                HashMap<String, Object> Lime = new HashMap<>();
+                if(limeButton.isChecked()) {
+                    Lime.put("limeAdded", true);
+                } else {
+                    Lime.put("limeAdded", false);
+                }
+                userDocRef.collection("Services").document("Lime").set(Lime);
             }
         });
         //add or delete spin
         spinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                //handle spin login
+                HashMap<String, Object> Spin = new HashMap<>();
+                if(spinButton.isChecked()) {
+                    Spin.put("spinAdded", true);
+                } else {
+                    Spin.put("spinAdded", false);
+                }
+                userDocRef.collection("Services").document("Spin").set(Spin);
             }
         });
 
         //some more functions for later
-        /*
-        //handle service filters
+
+        //HANDLE SERVICE FILTERS
         //filter for bird
         birdFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 //handle bird filter toggle
+                HashMap<String, Object> Bird = new HashMap<>();
+                if(birdFilter.isChecked()) {
+                    Bird.put("birdFilter", true);
+                } else {
+                    Bird.put("birdFilter", false);
+                }
+                userDocRef.update(Bird);
             }
         });
         //filter for lime
@@ -323,6 +490,13 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 //handle lime filter toggle
+                HashMap<String, Object> Lime = new HashMap<>();
+                if(limeFilter.isChecked()) {
+                    Lime.put("limeFilter", true);
+                } else {
+                    Lime.put("limeFilter", false);
+                }
+                userDocRef.update(Lime);
             }
         });
         //filter for spin
@@ -330,26 +504,47 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v){
                 //handle spin filter toggle
+                HashMap<String, Object> Spin = new HashMap<>();
+                if(spinFilter.isChecked()) {
+                    Spin.put("spinFilter", true);
+                } else {
+                    Spin.put("spinFilter", false);
+                }
+                userDocRef.update(Spin);
             }
         });
         //alter maxPrice variable
-        /*
+
         //handle vehicle filters
         //filter for bike
         bikeFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                //handle bike filter toggle
+                //handle spin filter toggle
+                HashMap<String, Object> Bike = new HashMap<>();
+                if(bikeFilter.isChecked()) {
+                    Bike.put("bikeFilter", true);
+                } else {
+                    Bike.put("bikeFilter", false);
+                }
+                userDocRef.update(Bike);
             }
         });
         //filter for scooter
         scooFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                //handle scooter filter toggle
+                //handle spin filter toggle
+                HashMap<String, Object> Scooter = new HashMap<>();
+                if(scooFilter.isChecked()) {
+                    Scooter.put("scooterFilter", true);
+                } else {
+                    Scooter.put("scooterFilter", false);
+                }
+                userDocRef.update(Scooter);
             }
         });
-         */
+
 
         //handle price filter
 

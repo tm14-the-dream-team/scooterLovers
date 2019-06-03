@@ -65,12 +65,16 @@ public class RegistrationActivity extends AppCompatActivity {
 
                                         DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
 
-                                        HashMap<String, Object> userSettings = new HashMap<>();
-                                        userSettings.put("priceFilter", false);
-                                        userSettings.put("serviceFilter", false);
-                                        userSettings.put("vehicleFilter", false);
+                                        //BEGIN INITIALIZING DATABASE
+                                        HashMap<String, Object> userFilters = new HashMap<>();
+                                        userFilters.put("priceFilter", false);
+                                        userFilters.put("birdFilter", false);
+                                        userFilters.put("limeFilter", false);
+                                        userFilters.put("spinFilter", false);
+                                        userFilters.put("bikeFilter", false);
+                                        userFilters.put("scooterFilter", false);
 
-                                        userDocRef.set(userSettings).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        userDocRef.set(userFilters).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 Log.d("SignInSuccess", "Settings Saved!");
@@ -85,7 +89,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         });
-
+                                        
                                         HashMap<String, Object> Bird = new HashMap<>();
                                         Bird.put("birdAdded", false);
                                         userDocRef.collection("Services").document("Bird").set(Bird);
@@ -95,10 +99,9 @@ public class RegistrationActivity extends AppCompatActivity {
                                         userDocRef.collection("Services").document("Lime").set(Lime);
 
                                         HashMap<String, Object> Spin = new HashMap<>();
-                                        Spin.put("SpinAdded", false);
-                                        userDocRef.collection("Services").document("Spin").set(Spin);
-
-
+                                        Spin.put("spinAdded", false);
+                                        userDocRef.collection("Services").document("Spin").set(Spin);                                        
+                                        
                                         startActivity(new Intent(RegistrationActivity.this, Map.class));
                                         finish();
                                     } else if (task.getException().getMessage() == "The email address is badly formatted."){
