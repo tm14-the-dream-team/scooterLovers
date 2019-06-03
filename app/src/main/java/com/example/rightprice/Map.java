@@ -20,6 +20,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,12 +48,19 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
+    //Set up RequestQueue
+    Cache cache;
+    Network network;
+    RequestQueue requestQueue;
 
     private GoogleMap mMap;
     private ImageButton settingsButton;
@@ -65,6 +80,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private Button resetButton;
     private FirebaseAuth mAuth;
     private Button gpsButton;
+    private Location currentLocation;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -84,9 +100,203 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         }
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker.getTag() != null ){
+                    // Populates popup layer
+                    Vehicle vehicle = (Vehicle)marker.getTag();
+                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
+                    popupLayer.setVisibility(View.VISIBLE);
+                }
+                return true; //suppresses default behavior. false uses default.
+            }
+        });
+
+        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);
+        network = new BasicNetwork(new HurlStack());
+        requestQueue = new RequestQueue(cache,network);
+        requestQueue.start();
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//        Location curr = new Location(currentLocation);
+        //System.out.println(currentLocation.getLatitude());
+        //System.out.println(currentLocation.getLongitude());
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        /**
+         * SPIN SETUP
+         */
+        final Spin spin = new Spin();
+        final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM SPIN");
+                System.out.println(response.toString());
+                try {
+                    spin.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)spin.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with SPIN");
+                if(response.has("jwt")){
+                    try {
+                        spin.setToken("Bearer " + response.getString("jwt"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                spin.generateVehicleReq(currentLocation,onVehicleResSpin);
+                requestQueue.add(spin.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
 
 
+        try {
+            spin.generateInitReq(onInitResSpin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(spin.getInitReq());
 
+        /**
+         * BIRD SETUP
+          */
+        final Bird bird = new Bird();
+        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM BIRD");
+                System.out.println(response.toString());
+                try {
+                    bird.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with BIRD");
+                if(response.has("expires_at")){
+                    try {
+                        bird.setExpiration(response.getString("expires_at"));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    System.out.println("Bird gave no expires at");
+                if(response.has("token")){
+                    try {
+                        bird.setToken("Bird "+response.getString("token"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(response.has("id")){
+                    try {
+                        bird.setId(response.getString("id"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                requestQueue.add(bird.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
+
+
+        try {
+            bird.generateInitReq(onInitResBird);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(bird.getInitReq());
+
+
+        /**
+         * ITS LIME TIME...
+         *
+         */
+
+        final Lime lime = new Lime();
+        final Response.Listener<JSONObject> onVehicleResLime = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Limes got.. success");
+                System.out.println(response.toString());
+                System.out.println("Its LIMETIME $$Scooooooot..$$");
+
+                try {
+                    lime.generateVehicles(response);
+
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)lime.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //bad request or something
+                System.out.println("Error Request when constructing Lime()");
+                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
+                requestQueue.add(lime.getVehicleReq());
+
+            }
+        };
+
+
+        Response.Listener<JSONObject> onInitResLime = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED from Lime");
+                System.out.println(response.toString());
+            }
+        };
+
+
+       //lime.generateInitReq("20",onInitResLime,onInitErrLime);
+        Location temp = new Location("hoo");
+        temp.setLatitude(32.8805);
+        temp.setLongitude(-117.2394);
+
+        lime.generateVehicleReq(temp,20,onVehicleResLime);
+        requestQueue.add(lime.getVehicleReq());
 
 
     }
@@ -540,7 +750,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
-                            Location currentLocation = (Location) task.getResult();
+                            currentLocation = (Location) task.getResult();
 
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
@@ -614,10 +824,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 }
             }
         }
-        // Add a marker in Sydney and move the camera
-        LatLng central_campus = new LatLng(32.880283, -117.237556);
+        // Add a marker in ucsd and move the camera
+        final LatLng central_campus = new LatLng(32.880283, -117.237556);
         mMap.addMarker(new MarkerOptions().position(central_campus).title("Geisel"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(central_campus,16.0f));
+
+
 
         //marker fun initialize the dummy vehicles.
 //        Vehicle bird = new Vehicle();
@@ -643,18 +855,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 //        vehicleArrayList.add(spin);
 //        this.loadVehiclePins(mMap,vehicleArrayList,markerArrayList);
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                if(marker.getTag() != null ){
-                    // Populates popup layer
-                    Vehicle vehicle = (Vehicle)marker.getTag();
-                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
-                    popupLayer.setVisibility(View.VISIBLE);
-                }
-                return true; //suppresses default behavior. false uses default.
-            }
-        });
+
     }
 
     public void loadVehiclePins(GoogleMap googleMap, ArrayList<Vehicle> vehicleArrayList, ArrayList<Marker> markerArrayList){
