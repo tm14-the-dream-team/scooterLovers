@@ -570,10 +570,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // The toggle is enabled
-                    filterByVehicle(markerArrayList,"bike",false);
+                    filterByVehicle(markerArrayList,"bicycle",false);
                 } else {
                     // The toggle is disabled
-                    filterByVehicle(markerArrayList,"bike",true);
+                    filterByVehicle(markerArrayList,"bicycle",true);
                 }
             }
         });
