@@ -99,7 +99,7 @@ public class Spin {
     }
 
     //https://web.spin.pm/api/v3/vehicles?lng=-117.237552&lat=32.880277&distance=&mode=
-    public void generateVehicleReq(Location loc,Response.Listener<JSONObject> onRes) {
+    public void generateVehicleReq(final Location loc,Response.Listener<JSONObject> onRes) {
         String url = "https://web.spin.pm/api/v3/vehicles?";
         url += "lng=" + loc.getLongitude();
         url += "&lat=" +loc.getLatitude();

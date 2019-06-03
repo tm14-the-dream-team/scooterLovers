@@ -156,10 +156,21 @@ public class Bird {
 
         System.out.println("in vehicle req class");
         String url = "https://api.bird.co/bird/nearby?";
+        System.out.println("IN BIRD GENERATOR");
+        System.out.println("IN BIRD GENERATOR");
+        System.out.println("IN BIRD GENERATOR");
+        System.out.println("IN BIRD GENERATOR");
+        System.out.println("IN BIRD GENERATOR");
+        System.out.println("IN BIRD GENERATOR");
+        System.out.println("IN BIRD GENERATOR");
+        System.out.println("LAT:"+point.getLatitude());
+        System.out.println("LONG:"+point.getLongitude());
+
 
         url+="latitude="+point.getLatitude();
         url+="&longitude="+point.getLongitude();
         url+="&radius="+radius;
+        System.out.println("BIRD UUUURRLLL: "+url);
 
         JSONObject obj = new JSONObject();
         /*

@@ -24,6 +24,7 @@ import com.android.volley.Cache;
 import com.android.volley.Network;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
@@ -115,6 +116,18 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         network = new BasicNetwork(new HurlStack());
         requestQueue = new RequestQueue(cache,network);
         requestQueue.start();
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//        Location curr = new Location(currentLocation);
+        //System.out.println(currentLocation.getLatitude());
+        //System.out.println(currentLocation.getLongitude());
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
         /**
          * SPIN SETUP
          */
@@ -228,6 +241,62 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             e.printStackTrace();
         }
         requestQueue.add(bird.getInitReq());
+
+
+        /**
+         * ITS LIME TIME...
+         *
+         */
+
+        final Lime lime = new Lime();
+        final Response.Listener<JSONObject> onVehicleResLime = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Limes got.. success");
+                System.out.println(response.toString());
+                System.out.println("Its LIMETIME $$Scooooooot..$$");
+
+                try {
+                    lime.generateVehicles(response);
+
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)lime.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //bad request or something
+                System.out.println("Error Request when constructing Lime()");
+                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
+                requestQueue.add(lime.getVehicleReq());
+
+            }
+        };
+
+
+        Response.Listener<JSONObject> onInitResLime = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED from Lime");
+                System.out.println(response.toString());
+            }
+        };
+
+
+       //lime.generateInitReq("20",onInitResLime,onInitErrLime);
+        Location temp = new Location("hoo");
+        temp.setLatitude(32.8805);
+        temp.setLongitude(-117.2394);
+
+        lime.generateVehicleReq(temp,20,onVehicleResLime);
+        requestQueue.add(lime.getVehicleReq());
+
 
     }
 
