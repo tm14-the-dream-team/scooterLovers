@@ -892,10 +892,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     icon = "bird_scooter";
                     break;
                 case "spin":
-                    if(vehicle.getType()=="scooter") {
-                        icon = "spin_scooter";
-                    } else {
+                    if(vehicle.getType().equals("bicycle")) {
                         icon = "spin_bike";
+                    } else {
+                        icon = "spin_scooter";
                     }
                     break;
                 case "lime":
