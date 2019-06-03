@@ -115,6 +115,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         network = new BasicNetwork(new HurlStack());
         requestQueue = new RequestQueue(cache,network);
         requestQueue.start();
+        /**
+         * SPIN SETUP
+         */
         final Spin spin = new Spin();
         final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
 
@@ -158,8 +161,73 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
         requestQueue.add(spin.getInitReq());
 
+        /**
+         * BIRD SETUP
+          */
+        final Bird bird = new Bird();
+        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM BIRD");
+                System.out.println(response.toString());
+                try {
+                    bird.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with BIRD");
+                if(response.has("expires_at")){
+                    try {
+                        bird.setExpiration(response.getString("expires_at"));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    System.out.println("Bird gave no expires at");
+                if(response.has("token")){
+                    try {
+                        bird.setToken("Bird "+response.getString("token"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(response.has("id")){
+                    try {
+                        bird.setId(response.getString("id"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                requestQueue.add(bird.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
 
 
+        try {
+            bird.generateInitReq(onInitResBird);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(bird.getInitReq());
 
     }
 
