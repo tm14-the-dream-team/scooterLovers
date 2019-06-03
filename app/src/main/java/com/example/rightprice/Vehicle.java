@@ -33,8 +33,9 @@ class Vehicle {
                 this.battery = battery;
         }
 
-
-
+        public String getPrice() {
+                return price;
+        }
 
         private double lat;
         private double lng;
