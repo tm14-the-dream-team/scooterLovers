@@ -82,7 +82,7 @@ public class Spin {
             id = current.getString("last4");
             if(type.equals("scooter")) {
                 bat = current.getInt("batt_percentage");
-                rate = "$1 to start, $0.15 / 1 min";
+                rate = "$1 to unlock $0.15 / 1 min";
             }
             else{
                 bat = -1;

@@ -83,225 +83,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private FirebaseAuth mAuth;
     private Button gpsButton;
     private Location currentLocation;
+    private TextView startPrice;
+    private TextView startBat;
+    private TextView minutePrice;
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "onMapReady: map is ready");
-        mMap = googleMap;
-        mMap.setPadding(0, 160, 0, 0);
-        if (mLocationPermissionsGranted) {
-            getDeviceLocation();
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            mMap.setMyLocationEnabled(true);
-            //mMap.getUiSettings().setMyLocationButtonEnabled(false);
-
-        }
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                if(marker.getTag() != null ){
-                    // Populates popup layer
-                    Vehicle vehicle = (Vehicle)marker.getTag();
-                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
-                    popupLayer.setVisibility(View.VISIBLE);
-                }
-                return true; //suppresses default behavior. false uses default.
-            }
-        });
-
-        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);
-        network = new BasicNetwork(new HurlStack());
-        requestQueue = new RequestQueue(cache,network);
-        requestQueue.start();
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-//        Location curr = new Location(currentLocation);
-        //System.out.println(currentLocation.getLatitude());
-        //System.out.println(currentLocation.getLongitude());
-        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        /**
-         * SPIN SETUP
-         */
-        final Spin spin = new Spin();
-        final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("GET RECIEVED FROM SPIN");
-                System.out.println(response.toString());
-                try {
-                    spin.generateVehicles(response);
-                    loadVehiclePins(mMap,(ArrayList<Vehicle>)spin.getVehicles(),markerArrayList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Request success with SPIN");
-                if(response.has("jwt")){
-                    try {
-                        spin.setToken("Bearer " + response.getString("jwt"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                spin.generateVehicleReq(currentLocation,onVehicleResSpin);
-                requestQueue.add(spin.getVehicleReq());
-                System.out.println(response.toString());
-
-            }
-        };
-
-
-        try {
-            spin.generateInitReq(onInitResSpin);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        requestQueue.add(spin.getInitReq());
-
-        /**
-         * BIRD SETUP
-          */
-        final Bird bird = new Bird();
-        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("GET RECIEVED FROM BIRD");
-                System.out.println(response.toString());
-                try {
-                    bird.generateVehicles(response);
-                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Request success with BIRD");
-                if(response.has("expires_at")){
-                    try {
-                        bird.setExpiration(response.getString("expires_at"));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                    System.out.println("Bird gave no expires at");
-                if(response.has("token")){
-                    try {
-                        bird.setToken("Bird "+response.getString("token"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if(response.has("id")){
-                    try {
-                        bird.setId(response.getString("id"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                try {
-                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                requestQueue.add(bird.getVehicleReq());
-                System.out.println(response.toString());
-
-            }
-        };
-
-
-        try {
-            bird.generateInitReq(onInitResBird);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        requestQueue.add(bird.getInitReq());
-
-
-        /**
-         * ITS LIME TIME...
-         *
-         */
-
-        final Lime lime = new Lime();
-        final Response.Listener<JSONObject> onVehicleResLime = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Limes got.. success");
-                System.out.println(response.toString());
-                System.out.println("Its LIMETIME $$Scooooooot..$$");
-
-                try {
-                    lime.generateVehicles(response);
-
-                    loadVehiclePins(mMap,(ArrayList<Vehicle>)lime.getVehicles(),markerArrayList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //bad request or something
-                System.out.println("Error Request when constructing Lime()");
-                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
-                requestQueue.add(lime.getVehicleReq());
-
-            }
-        };
-
-
-        Response.Listener<JSONObject> onInitResLime = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("GET RECIEVED from Lime");
-                System.out.println(response.toString());
-            }
-        };
-
-
-       //lime.generateInitReq("20",onInitResLime,onInitErrLime);
-        Location temp = new Location("hoo");
-        temp.setLatitude(32.8805);
-        temp.setLongitude(-117.2394);
-
-        lime.generateVehicleReq(temp,20,onVehicleResLime);
-        requestQueue.add(lime.getVehicleReq());
-
-
-    }
 
     private static final String TAG = "MapActivity";
 
@@ -771,7 +556,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         serviceLabel = findViewById(R.id.popup_service);
         batteryValue = findViewById(R.id.popup_battery_value);
         startValue = findViewById(R.id.popup_start_value);
-        minuteValue = findViewById(R.id.popup_minute_value);
         startButton = findViewById(R.id.start_button);
         popupLayer = findViewById(R.id.popup_layer);
         popupLayer.setVisibility(View.INVISIBLE);
@@ -789,6 +573,237 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
     }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onMapReady: map is ready");
+        mMap = googleMap;
+        mMap.setPadding(0, 160, 0, 0);
+        if (mLocationPermissionsGranted) {
+            getDeviceLocation();
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            mMap.setMyLocationEnabled(true);
+            //mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+        }
+
+        startPrice = findViewById(R.id.popup_start_value);
+        startBat = findViewById(R.id.popup_battery_value);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker.getTag() != null ){
+                    // Populates popup layer
+                    Vehicle vehicle = (Vehicle)marker.getTag();
+                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
+                    popupLayer.setVisibility(View.VISIBLE);
+                    startPrice.setText("$" + vehicle.getPrice().substring(1));
+                    if(vehicle.getBattery() == -1){
+                        startBat.setVisibility(View.INVISIBLE);
+                    } else {
+                        startBat.setVisibility(View.VISIBLE);
+                        startBat.setText("Battery: " + String.valueOf(vehicle.getBattery()));
+                    }
+                }
+                return true; //suppresses default behavior. false uses default.
+            }
+        });
+
+        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);
+        network = new BasicNetwork(new HurlStack());
+        requestQueue = new RequestQueue(cache,network);
+        requestQueue.start();
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//        Location curr = new Location(currentLocation);
+        //System.out.println(currentLocation.getLatitude());
+        //System.out.println(currentLocation.getLongitude());
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        /**
+         * SPIN SETUP
+         */
+        final Spin spin = new Spin();
+        final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM SPIN");
+                System.out.println(response.toString());
+                try {
+                    spin.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)spin.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with SPIN");
+                if(response.has("jwt")){
+                    try {
+                        spin.setToken("Bearer " + response.getString("jwt"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                spin.generateVehicleReq(currentLocation,onVehicleResSpin);
+                requestQueue.add(spin.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
+
+
+        try {
+            spin.generateInitReq(onInitResSpin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(spin.getInitReq());
+
+        /**
+         * BIRD SETUP
+         */
+        final Bird bird = new Bird();
+        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM BIRD");
+                System.out.println(response.toString());
+                try {
+                    bird.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with BIRD");
+                if(response.has("expires_at")){
+                    try {
+                        bird.setExpiration(response.getString("expires_at"));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    System.out.println("Bird gave no expires at");
+                if(response.has("token")){
+                    try {
+                        bird.setToken("Bird "+response.getString("token"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(response.has("id")){
+                    try {
+                        bird.setId(response.getString("id"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                requestQueue.add(bird.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
+
+
+        try {
+            bird.generateInitReq(onInitResBird);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(bird.getInitReq());
+
+
+        /**
+         * ITS LIME TIME...
+         *
+         */
+
+        final Lime lime = new Lime();
+        final Response.Listener<JSONObject> onVehicleResLime = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Limes got.. success");
+                System.out.println(response.toString());
+                System.out.println("Its LIMETIME $$Scooooooot..$$");
+
+                try {
+                    lime.generateVehicles(response);
+
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)lime.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //bad request or something
+                System.out.println("Error Request when constructing Lime()");
+                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
+                requestQueue.add(lime.getVehicleReq());
+
+            }
+        };
+
+
+        Response.Listener<JSONObject> onInitResLime = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED from Lime");
+                System.out.println(response.toString());
+            }
+        };
+
+
+        //lime.generateInitReq("20",onInitResLime,onInitErrLime);
+        Location temp = new Location("hoo");
+        temp.setLatitude(32.8805);
+        temp.setLongitude(-117.2394);
+
+        lime.generateVehicleReq(temp,20,onVehicleResLime);
+        requestQueue.add(lime.getVehicleReq());
+
+
+    }
+
 
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
@@ -902,7 +917,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     icon = "lime_scooter";
                     break;
                 default:
-                    System.out.print("What the fuck");
                     icon = "logo";
             }
             Marker marker = googleMap.addMarker(new MarkerOptions().position(pos)
