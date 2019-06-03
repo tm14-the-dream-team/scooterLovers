@@ -1,11 +1,8 @@
 package com.example.rightprice;
 
-import android.app.Service;
-import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 
 
 import com.android.volley.AuthFailureError;
@@ -13,7 +10,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.rightprice.JSONAsyncTask.JSONAsyncTaskListener;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +24,7 @@ import java.util.Map;
 public class Bird extends com.example.rightprice.Map {
 
 
-    private List<Vehicle>birds;
+    private List<Vehicle> birds;
     private JsonObjectRequest initReq;
     private String token;
     private String id;
@@ -35,42 +32,57 @@ public class Bird extends com.example.rightprice.Map {
     private String email;
     private Location loc = new Location("GaryIsMyDad");
 
+    public interface BirdListener{
+        public void onDataLoaded(JsonObjectRequest result);
+    }
+
+    private BirdListener listener;
+
+    public Bird(){
+        this.listener = null;
+    }
+
+    public void setBirdListener(BirdListener listener){
+        this.listener = listener;
+    }
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        email ="johnathan@ucsd.com";
-        id="eee4913d-078e-4f13-8bd6-87d3245a3fb0";
+        email = "johnathan@ucsd.com";
+        id = "eee4913d-078e-4f13-8bd6-87d3245a3fb0";
         //token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
-        token="Bird eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
+        token = "Bird eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
         loc.setLatitude(32.880277);
         loc.setLongitude(-117.237552);
 
 
         String url = "https://api.bird.co/bird/nearby?";
 
-        url+="latitude="+loc.getLatitude();
-        url+="&longitude="+loc.getLongitude();
-        url+="&radius="+1000;
+        url += "latitude=" + loc.getLatitude();
+        url += "&longitude=" + loc.getLongitude();
+        url += "&radius=" + 1000;
 
-        new JSONAsyncTask().execute(url);
+        new JSONAsyncTask().execute(url, email);
 
 
     }
 
-    public class JSONAsyncTask extends AsyncTask<String, Void, String> {
+    public class JSONAsyncTask extends AsyncTask<String, Void, JsonObjectRequest> {
+
 
 
 
         @Override
-        final protected String doInBackground(String url) {
-
+        protected JsonObjectRequest doInBackground(String... strings) {
             JSONObject obj = new JSONObject();
+            String url = strings[0];
+            String email = strings[1];
 
             try {
-                obj.put("email","johnathan@ucsd.com");
+                obj.put("email", email);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -85,7 +97,7 @@ public class Bird extends com.example.rightprice.Map {
 
             Response.Listener<JSONObject> onRes = new Response.Listener<JSONObject>() {
                 @Override
-                public void onResponse(JSONObject response){
+                public void onResponse(JSONObject response) {
                     System.out.println("GET RECIEVED FROM BIRD");
                     System.out.println(response.toString());
                     try {
@@ -97,7 +109,7 @@ public class Bird extends com.example.rightprice.Map {
             };
             System.out.println("Here is the request for GET BIRD:");
             System.out.println(obj);
-            vehicleReq = new JsonObjectRequest(Request.Method.GET,url,obj,onRes,onErr) {
+            vehicleReq = new JsonObjectRequest(Request.Method.GET, url, obj, onRes, onErr) {
                 /**
                  * Passing some request headers*
                  */
@@ -106,7 +118,7 @@ public class Bird extends com.example.rightprice.Map {
                     HashMap headers = new HashMap();
                     headers.put("Authorization", token);
                     headers.put("Device-id:", "801087ee-88a2-4ff7-9067-2e090007ffb6");
-                    headers.put("App-Version","3.0.5");
+                    headers.put("App-Version", "3.0.5");
 
                     String locH = "{";
                 /*locH+= "\"latitude\":"+String.format("%.6f",point.getLatitude())+",";
@@ -119,77 +131,43 @@ public class Bird extends com.example.rightprice.Map {
                 locH+= "\"heading\":"+ -1;
 */
                     //{"latitude":32.888532,
-                    locH+= "\"latitude\":"+loc.getLatitude()+",";
+                    locH += "\"latitude\":" + loc.getLatitude() + ",";
                     // "longitude":-117.240903,
-                    locH+= "\"longitude\":"+loc.getLongitude()+",";
+                    locH += "\"longitude\":" + loc.getLongitude() + ",";
                     // "altitude":0,
-                    locH+= "\"altitude\":"+ 0 + ",";
+                    locH += "\"altitude\":" + 0 + ",";
                     // "accuracy":100,
-                    locH+= "\"accuracy\":"+ 100 + ",";
+                    locH += "\"accuracy\":" + 100 + ",";
                     // "speed":-1,
-                    locH+= "\"speed\":"+ -1 + ",";
+                    locH += "\"speed\":" + -1 + ",";
                     // "heading":-1}
-                    locH+= "\"heading\":"+ -1;
-                    locH+= "}";
+                    locH += "\"heading\":" + -1;
+                    locH += "}";
 
                     //{"latitude":32.880277,"longitude":-117.237552,"altitude":0,"accuracy":100,"speed":-1,"heading":-1}
                     //{"latitude":32.888532,"longitude":-117.240903,"altitude":0,"accuracy":100,"speed":-1,"heading":-1}
 
                     System.out.println("Here is location: " + locH);
 
-                    headers.put("Location",locH);
+                    headers.put("Location", locH);
                     System.out.println("Headers for getBirds: ");
                     System.out.println(headers);
                     return headers;
                 }
             };
+
+            return vehicleReq;
         }
 
-        public JsonObjectRequest getInitReq() {
-            return initReq;
+        @Override
+        protected void onPostExecute(JsonObjectRequest vehicleReq) {
+
+            if(listener != null)
+                listener.onDataLoaded(vehicleReq);
+
         }
 
-        return null;
     }
-
-
-    @Override
-    protected void onPostExecute(String result){
-        super.onPostExecute(result);
-        //output bird vehicles
-
-
-
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
