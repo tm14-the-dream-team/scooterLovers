@@ -4,6 +4,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
 
 
 import com.android.volley.AuthFailureError;
@@ -20,6 +23,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Bird {
 
@@ -38,6 +49,8 @@ public class Bird {
     private String expiration;
     private String email;
     private JsonObjectRequest vehicleReq;
+    private String randomBirdEmail;
+    private FirebaseAuth mAuth;
 
     public void setId(String id) {
         this.id = id;
@@ -107,11 +120,31 @@ public class Bird {
     }
 
     public Bird() {
-        email = "johnathan@ucsd.com";
+       // email = "johnathan@ucsd.com";
         id = "eee4913d-078e-4f13-8bd6-87d3245a3fb0";
         //token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
         token = "Bird eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
+        mAuth = FirebaseAuth.getInstance();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        DocumentReference birdSettingRef = db.collection("Users").document(currentUser.getUid()).collection("Services").document("Bird");
+
+        birdSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    randomBirdEmail = documentSnapshot.getString("birdEmail");
+
+                } else {
+                    System.err.println("No bird random email!");
+                }
+            }
+        });
+        email = randomBirdEmail;
     }
 
 
