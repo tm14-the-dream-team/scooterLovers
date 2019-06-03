@@ -29,7 +29,7 @@ public class Lime {
     private String expiration;
     private String phoneNumber;
 
-    public List<Vehicle> getLimes() {
+    public List<Vehicle> getVehicles() {
         return limes;
     }
 
@@ -39,6 +39,20 @@ public class Lime {
 
     public JsonObjectRequest getInitReq() {
         return initReq;
+    }
+
+    public void generateInitReq(String phone, Response.Listener<JSONObject> onRes, Response.ErrorListener onErr){
+        //this.phoneNumber = phone;
+        JSONObject obj = new JSONObject();
+        //Phone number added to request manually here
+        String url = "https://web-production.lime.bike/api/rider/v1/login?phone=" + phone;
+        //String url = "https://web-production.lime.bike/api/rider/v1/login";
+        //obj.put("phone",this.phoneNumber);
+
+        initReq = new JsonObjectRequest(Request.Method.GET, url, obj, onRes, onErr);
+        System.out.println("HERE IS THE LIME INITREQ:" + initReq.toString());
+        System.out.println("HERE IS THE LIME obj:" + obj.toString());
+
     }
 
     public Lime(String phoneNumber/*MUST BE INTERNATIONAL FORMAT EX: 15552221234*/) throws JSONException {
@@ -71,10 +85,9 @@ public class Lime {
         System.out.println("HERE IS THE LIME obj:" + obj.toString());
     }
 
-    //HARD CODED ACCOUNT
+    //DONT USE THIS...
     public Lime(Location loc) {
         token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX3Rva2VuIjoiM1dTWjdHVEFRR1c3MiIsImxvZ2luX2NvdW50Ijo4fQ.za5fKOSbwyTzrp4_8d6H1T7rijeVfpO-zTXxEXFA3H0";
-        generateVehicleReq(loc, 50);
         /***
          * NEED INIT REQ......
          *
@@ -82,8 +95,11 @@ public class Lime {
 
 
     }
+    public Lime(){
+        token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX3Rva2VuIjoiM1dTWjdHVEFRR1c3MiIsImxvZ2luX2NvdW50Ijo4fQ.za5fKOSbwyTzrp4_8d6H1T7rijeVfpO-zTXxEXFA3H0";
+    }
 
-    private void generateVehicleReq(Location loc, int zoom /*not sure what this is*/) {
+    public void generateVehicleReq(final Location loc, int zoom /*not sure what this is*/,Response.Listener<JSONObject> onRes) {
         //Example point..
         //loc = 32.880457,-117.237612
         //NE-> = 32.888998, -117.225209
@@ -121,23 +137,6 @@ public class Lime {
 
             }
         };
-        Response.Listener<JSONObject> onRes = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Limes got.. success");
-                try {
-                    generateVehicles(response);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(response.toString());
-
-
-                System.out.println("Its LIMETIME $$Scooooooot..$$");
-
-
-            }
-        };
         vehicleReq = new JsonObjectRequest(Request.Method.GET, url, obj, onRes, onErr) {
             /**
              * Passing some request headers*
@@ -146,13 +145,14 @@ public class Lime {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap headers = new HashMap();
                 headers.put("Cookie", "_limebike-web_session=K0ZVQkpibTd5TUowbFYrV2xVOXZBSHN5dEZKcTBEVjU1RUcxdlY1djZJTnlDWXdYMlRkMkN5SDl0am5sTHVxMmZxblhBUmN6cEFJSExHTFh5dVVBK3llVTY3OEtuZmRSY0l4RVptdGxLa3BQTFFKQUdmMXhuSTVOWkwrWUtOcmVWcUJUOGFISU55dkxMeGp3WjZ6UFU2S1ZVb3hGSU1JY0g3VXFPdzh1N0Z6KzFuamJBZjlZTHQ3ZmVtTXVWUmVnN2poeEpPLy9PRU9kaTlvVUVqdnhKZmhacUFmSmJwZmY4YUNnMFpWZ2RIN2RTckppbE1yV0tXOW5ScHBULzlzWStJUGJZMUQwTmpVSXNKdmlOci80bTRlZkltRTUyUVZaUk9WVTliTm14QXNCK2tnV21ERXJPYTd5cE5EK0NmRThqaWRMREYzakQwdEl0WFBqOXNZWlNBQk1iMENhUWJ2SkdhRjlhU2JBV2RmRUZGTzJqS3ZPMlR3bHVwZWRnSFZZZnBnd1paZSttbzM5dVNrQU4rVkR2NWlITW9kZTVQVEVZS01EMlJQbU9yVT0tLXRXTG1ZVHdlYnV4TG95cElLM2xIRlE9PQ%3D%3D--6cc3f3b3e98103c4c4a9d8a1ff2259969cb02996; path=/; domain=.web-production.lime.bike; Secure; HttpOnly; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+                //headers.put("Cookie", "_limebike-web_session=MUtOTURXZ3dJblJ3ckNQVStTMFhXK3AxNFdIYkFobXNiS0w2TUR4UU5oUlREeGpWdTFOQjJmbytSMmt6ZkVaUHpGZjJveDhseGt0TlBPTk10bmppd3lmRkdxaTZXY2xIdkpINkdja1lXK1Nldm1FaXQvZ0xON2txbUlRS1kyVytmNlE4ZXlKbDM4RlBtNURpR2EwMjVCUlJhSVpHU3gvc1JydEl2RHl1bUhTaEJiSGhtbTRnOTNyTXFWTHFKeEFoa090WjlwREZUV3RCaEFXRkNsV3IvQkYvakFMN1hzeHc2RmxLSEZmSEJFMUFkOWJkUmtIeVliSkduUU5BM3QwYTg5REdqMTRKYjhzYTNLeGs0eHFkdXhwSFIzSElqeC9qUDhzcnNiaWtUT1lzZzRzQWFyN0dDbDhuNzJYaE1WVjZXaHJpRUlzQWdGRytjcXQwc1hpQXNxcTNKamhGVkc5M0dGc25hcEFCYUZLaGVsV0R2VTMrOXZnYnVKb0lmdTNraEZzeWtRZFUveG03elJkRXFuQk0vMW5hYXlIcUZXb2xnejE5T2VRTHhYZz0tLTR6bzVlWnZyRGlGYVpyaFJsQ3BIR1E9PQ%3D%3D--6bc9417693dfcb75275a0bd6bf7d191758716cd2; path=/; domain=.web-production.lime.bike; Secure; HttpOnly; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
                 return headers;
             }
         };
 
     }
 
-    private void generateVehicles(JSONObject response) throws JSONException {
+    public void generateVehicles(JSONObject response) throws JSONException {
         limes = new ArrayList<Vehicle>();
         JSONArray items = response.getJSONObject("data").getJSONObject("attributes").getJSONArray("bikes");
         String id = "";

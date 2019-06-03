@@ -3,7 +3,8 @@ package com.example.rightprice;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,12 +15,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,12 +50,19 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
+    //Set up RequestQueue
+    Cache cache;
+    Network network;
+    RequestQueue requestQueue;
 
     private GoogleMap mMap;
     private ImageButton settingsButton;
@@ -62,15 +79,17 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private LinearLayout servicesLayer;
     private LinearLayout filterOptionsLayer;
     private Button logoutButton;
+    private Button resetButton;
     private FirebaseAuth mAuth;
     private Button gpsButton;
+    private Location currentLocation;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         mMap = googleMap;
-
+        mMap.setPadding(0, 160, 0, 0);
         if (mLocationPermissionsGranted) {
             getDeviceLocation();
 
@@ -80,12 +99,206 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 return;
             }
             mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            //mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         }
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker.getTag() != null ){
+                    // Populates popup layer
+                    Vehicle vehicle = (Vehicle)marker.getTag();
+                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
+                    popupLayer.setVisibility(View.VISIBLE);
+                }
+                return true; //suppresses default behavior. false uses default.
+            }
+        });
+
+        cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);
+        network = new BasicNetwork(new HurlStack());
+        requestQueue = new RequestQueue(cache,network);
+        requestQueue.start();
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//        Location curr = new Location(currentLocation);
+        //System.out.println(currentLocation.getLatitude());
+        //System.out.println(currentLocation.getLongitude());
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
+        /**
+         * SPIN SETUP
+         */
+        final Spin spin = new Spin();
+        final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM SPIN");
+                System.out.println(response.toString());
+                try {
+                    spin.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)spin.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with SPIN");
+                if(response.has("jwt")){
+                    try {
+                        spin.setToken("Bearer " + response.getString("jwt"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                spin.generateVehicleReq(currentLocation,onVehicleResSpin);
+                requestQueue.add(spin.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
 
 
+        try {
+            spin.generateInitReq(onInitResSpin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(spin.getInitReq());
 
+        /**
+         * BIRD SETUP
+          */
+        final Bird bird = new Bird();
+        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM BIRD");
+                System.out.println(response.toString());
+                try {
+                    bird.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with BIRD");
+                if(response.has("expires_at")){
+                    try {
+                        bird.setExpiration(response.getString("expires_at"));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    System.out.println("Bird gave no expires at");
+                if(response.has("token")){
+                    try {
+                        bird.setToken("Bird "+response.getString("token"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(response.has("id")){
+                    try {
+                        bird.setId(response.getString("id"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                requestQueue.add(bird.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
+
+
+        try {
+            bird.generateInitReq(onInitResBird);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(bird.getInitReq());
+
+
+        /**
+         * ITS LIME TIME...
+         *
+         */
+
+        final Lime lime = new Lime();
+        final Response.Listener<JSONObject> onVehicleResLime = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Limes got.. success");
+                System.out.println(response.toString());
+                System.out.println("Its LIMETIME $$Scooooooot..$$");
+
+                try {
+                    lime.generateVehicles(response);
+
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)lime.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //bad request or something
+                System.out.println("Error Request when constructing Lime()");
+                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
+                requestQueue.add(lime.getVehicleReq());
+
+            }
+        };
+
+
+        Response.Listener<JSONObject> onInitResLime = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED from Lime");
+                System.out.println(response.toString());
+            }
+        };
+
+
+       //lime.generateInitReq("20",onInitResLime,onInitErrLime);
+        Location temp = new Location("hoo");
+        temp.setLatitude(32.8805);
+        temp.setLongitude(-117.2394);
+
+        lime.generateVehicleReq(temp,20,onVehicleResLime);
+        requestQueue.add(lime.getVehicleReq());
 
 
     }
@@ -105,9 +318,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     //marker implementation
     private ArrayList<Vehicle> vehicleArrayList;
     private ArrayList<Marker> markerArrayList;
-    float spinColor = BitmapDescriptorFactory.HUE_ORANGE;
-    float limeColor = BitmapDescriptorFactory.HUE_GREEN;
-    float birdColor = BitmapDescriptorFactory.HUE_AZURE;
     //popup window implementation
     private TextView serviceLabel;
     private TextView batteryValue;
@@ -240,8 +450,41 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         //start of button initialization
 
         birdFilter = findViewById(R.id.vehicle_bird_toggle);
+        birdFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByService(markerArrayList,"bird",false);
+                } else {
+                    // The toggle is disabled
+                    filterByService(markerArrayList,"bird",true);
+                }
+            }
+        });
         limeFilter = findViewById(R.id.vehicle_lime_toggle);
+        limeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByService(markerArrayList,"lime",false);
+                } else {
+                    // The toggle is disabled
+                    filterByService(markerArrayList,"lime",true);
+                }
+            }
+        });
         spinFilter = findViewById(R.id.vehicle_spin_toggle);
+        spinFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByService(markerArrayList,"spin",false);
+                } else {
+                    // The toggle is disabled
+                    filterByService(markerArrayList,"spin",true);
+                }
+            }
+        });
 
         DocumentReference filtersRef = db.collection("Users").document(user.getUid());
         filtersRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -323,7 +566,29 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         //maxPrice find
         bikeFilter = findViewById(R.id.service_bike_toggle);
+        bikeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByVehicle(markerArrayList,"bicycle",false);
+                } else {
+                    // The toggle is disabled
+                    filterByVehicle(markerArrayList,"bicycle",true);
+                }
+            }
+        });
         scooFilter = findViewById(R.id.service_scooter_toggle);
+        scooFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    filterByVehicle(markerArrayList,"scooter",false);
+                } else {
+                    // The toggle is disabled
+                    filterByVehicle(markerArrayList,"scooter",true);
+                }
+            }
+        });
 
         logoutButton = (Button) findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -335,22 +600,16 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 finish();
             }
         });
-        servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
-        servicesLayer.setVisibility(View.INVISIBLE);
 
-
-
-        // Shows settings when pressing the Settings Button
-        settingsButton.setOnClickListener(new View.OnClickListener() {
+        resetButton = (Button) findViewById(R.id.reset_button);
+        resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                if (servicesLayer.getVisibility()==View.VISIBLE) {
-                    servicesLayer.setVisibility(View.INVISIBLE);
-                } else {
-                    servicesLayer.setVisibility(View.VISIBLE);
-                }
+                Intent forgotPassView = new Intent(Map.this, ForgotPassActivity.class);
+                startActivity(forgotPassView);
             }
         });
+
 
         //add or delete bird
         birdButton.setOnClickListener(new View.OnClickListener() {
@@ -472,14 +731,26 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-
-        //handle price filter
-
-
-        //handle services filter
+        servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
+        servicesLayer.setVisibility(View.INVISIBLE);
 
         filterOptionsLayer = (LinearLayout) findViewById(R.id.filter_options_layer);
         filterOptionsLayer.setVisibility(View.INVISIBLE);
+
+        // Shows settings when pressing the Settings Button
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                if (servicesLayer.getVisibility()==View.VISIBLE) {
+                    servicesLayer.setVisibility(View.INVISIBLE);
+                } else {
+                    servicesLayer.setVisibility(View.VISIBLE);
+                    filterOptionsLayer.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        //handle services filter
         // Shows filter menu when pressing the filter Button
         filterButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -488,6 +759,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     filterOptionsLayer.setVisibility(View.INVISIBLE);
                 } else {
                     filterOptionsLayer.setVisibility(View.VISIBLE);
+                    servicesLayer.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -532,7 +804,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     public void onComplete(@NonNull Task task) {
                         if(task.isSuccessful()){
                             Log.d(TAG, "onComplete: found location!");
-                            Location currentLocation = (Location) task.getResult();
+                            currentLocation = (Location) task.getResult();
 
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM);
@@ -606,76 +878,64 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 }
             }
         }
-        // Add a marker in Sydney and move the camera
-        LatLng central_campus = new LatLng(32.880283, -117.237556);
-        mMap.addMarker(new MarkerOptions().position(central_campus).title("Geisel"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(central_campus,16.0f));
 
-        //marker fun initialize the dummy vehicles.
-//        Vehicle bird = new Vehicle();
-//        bird.setLat(32.8797);
-//        bird.setLng(-117.2362);
-//        bird.setVendor("bird");
-//        bird.setBattery(50);
-//        LatLng bird_pos = new LatLng(32.8797, -117.2362);
-//        Vehicle lime = new Vehicle();
-//        lime.setLat(32.8785);
-//        lime.setLng(-117.2397);
-//        lime.setVendor("lime");
-//        lime.setBattery(100);
-//        LatLng lime_pos = new LatLng(32.8785, -117.2397);
-//        Vehicle spin = new Vehicle();
-//        spin.setLat(32.8851);
-//        spin.setLng(-117.2392);
-//        spin.setVendor("spin");
-//        spin.setBattery(69);
-//        LatLng spin_pos = new LatLng(32.8851, -117.2392);
-//        vehicleArrayList.add(bird);
-//        vehicleArrayList.add(lime);
-//        vehicleArrayList.add(spin);
-//        this.loadVehiclePins(mMap,vehicleArrayList,markerArrayList);
-
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                if(marker.getTag() != null ){
-                    // Populates popup layer
-                    Vehicle vehicle = (Vehicle)marker.getTag();
-                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
-                    popupLayer.setVisibility(View.VISIBLE);
-                }
-                return true; //suppresses default behavior. false uses default.
-            }
-        });
     }
 
     public void loadVehiclePins(GoogleMap googleMap, ArrayList<Vehicle> vehicleArrayList, ArrayList<Marker> markerArrayList){
         for(int i = 0; i < vehicleArrayList.size(); i++){
-            LatLng pos = new LatLng( vehicleArrayList.get(i).getLat(), vehicleArrayList.get(i).getLng());
-            String vendor = vehicleArrayList.get(i).getVendor();
-            float color;
+            Vehicle vehicle = vehicleArrayList.get(i);
+            LatLng pos = new LatLng( vehicle.getLat(), vehicle.getLng());
+            String vendor = vehicle.getVendor();
+            String icon;
             switch(vendor) {
                 case "bird":
-                    color = birdColor;
+                    icon = "bird_scooter";
                     break;
                 case "spin":
-                    color = spinColor;
+                    if(vehicle.getType()=="scooter") {
+                        icon = "spin_scooter";
+                    } else {
+                        icon = "spin_bike";
+                    }
                     break;
                 case "lime":
-                    color = limeColor;
+                    icon = "lime_scooter";
                     break;
                 default:
                     System.out.print("What the fuck");
-                    color = BitmapDescriptorFactory.HUE_VIOLET;
+                    icon = "logo";
             }
             Marker marker = googleMap.addMarker(new MarkerOptions().position(pos)
-                    .icon(BitmapDescriptorFactory
-                            .defaultMarker(color)));
-            marker.setTag(vehicleArrayList.get(i)); //adds vehicle to the marker.
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons(icon,100,100))));
+            marker.setTag(vehicle); //adds vehicle to the marker.
             markerArrayList.add(marker);
         }
     }
 
+    public Bitmap resizeMapIcons(String iconName, int width, int height){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
+    }
 
+    public void filterByService(ArrayList<Marker> markerArrayList, String vendor, boolean setAs){
+        for(int i = 0; i < markerArrayList.size(); i++){
+            Marker marker = markerArrayList.get(i);
+            Vehicle vehicle = (Vehicle) marker.getTag();
+            if(vehicle.getVendor().equals(vendor)){
+                marker.setVisible(setAs);
+            }
+        }
+    }
+
+    public void filterByVehicle(ArrayList<Marker> markerArrayList, String type, boolean setAs){
+        for(int i = 0; i < markerArrayList.size(); i++){
+            Marker marker = markerArrayList.get(i);
+            Vehicle vehicle = (Vehicle) marker.getTag();
+            if(vehicle.getType().equals(type)){
+                marker.setVisible(setAs);
+            }
+        }
+    }
 
 }

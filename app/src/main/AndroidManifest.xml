@@ -56,11 +56,18 @@
 
         <activity
             android:name=".Map"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_map" />
-        <activity android:name=".RegistrationActivity" />
+
+        <activity
+            android:name=".RegistrationActivity"
+            android:screenOrientation="portrait"/>
 
 
-        <activity android:name=".SplashActivity" android:theme="@style/SplashTheme">
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -69,16 +76,18 @@
 
         </activity>
 
-        <activity android:name=".ForgotPassActivity">
+        <activity
+            android:name=".ForgotPassActivity"
+            android:label="Password Recovery"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-
             </intent-filter>
-
         </activity>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
