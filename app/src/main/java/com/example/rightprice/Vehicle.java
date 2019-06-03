@@ -5,7 +5,7 @@ class Vehicle {
                 return lat;
         }
 
-        public void setLat(int lat) {
+        public void setLat(double lat) {
                 this.lat = lat;
         }
 
@@ -13,7 +13,7 @@ class Vehicle {
                 return lng;
         }
 
-        public void setLng(int lng) {
+        public void setLng(double lng) {
                 this.lng = lng;
         }
 

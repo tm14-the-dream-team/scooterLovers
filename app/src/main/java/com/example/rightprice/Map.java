@@ -1,6 +1,5 @@
 package com.example.rightprice;
 
-import android.*;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -25,7 +25,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,11 +39,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
-
 
 public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -98,6 +100,21 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private Boolean mLocationPermissionsGranted = false;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
+
+    //marker implementation
+    private ArrayList<Vehicle> vehicleArrayList;
+    private ArrayList<Marker> markerArrayList;
+    float spinColor = BitmapDescriptorFactory.HUE_ORANGE;
+    float limeColor = BitmapDescriptorFactory.HUE_GREEN;
+    float birdColor = BitmapDescriptorFactory.HUE_AZURE;
+    //popup window implementation
+    private TextView serviceLabel;
+    private TextView batteryValue;
+    private TextView startValue;
+    private TextView minuteValue;
+    private Button startButton;
+    private Button closeButton;
+    private LinearLayout popupLayer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -474,6 +491,30 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
+        // Added initializations for Adding pins
+        vehicleArrayList = new ArrayList<Vehicle>();
+        markerArrayList = new ArrayList<Marker>();
+        // Added Stuff for popup window
+        serviceLabel = findViewById(R.id.popup_service);
+        batteryValue = findViewById(R.id.popup_battery_value);
+        startValue = findViewById(R.id.popup_start_value);
+        minuteValue = findViewById(R.id.popup_minute_value);
+        startButton = findViewById(R.id.start_button);
+        popupLayer = findViewById(R.id.popup_layer);
+        popupLayer.setVisibility(View.INVISIBLE);
+        startButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //implement starting the bird
+            }
+        });
+        closeButton = findViewById(R.id.close_button);
+        closeButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                popupLayer.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private void getDeviceLocation(){
@@ -564,7 +605,76 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 }
             }
         }
+        // Add a marker in Sydney and move the camera
+        LatLng central_campus = new LatLng(32.880283, -117.237556);
+        mMap.addMarker(new MarkerOptions().position(central_campus).title("Geisel"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(central_campus,16.0f));
+
+        //marker fun initialize the dummy vehicles.
+//        Vehicle bird = new Vehicle();
+//        bird.setLat(32.8797);
+//        bird.setLng(-117.2362);
+//        bird.setVendor("bird");
+//        bird.setBattery(50);
+//        LatLng bird_pos = new LatLng(32.8797, -117.2362);
+//        Vehicle lime = new Vehicle();
+//        lime.setLat(32.8785);
+//        lime.setLng(-117.2397);
+//        lime.setVendor("lime");
+//        lime.setBattery(100);
+//        LatLng lime_pos = new LatLng(32.8785, -117.2397);
+//        Vehicle spin = new Vehicle();
+//        spin.setLat(32.8851);
+//        spin.setLng(-117.2392);
+//        spin.setVendor("spin");
+//        spin.setBattery(69);
+//        LatLng spin_pos = new LatLng(32.8851, -117.2392);
+//        vehicleArrayList.add(bird);
+//        vehicleArrayList.add(lime);
+//        vehicleArrayList.add(spin);
+//        this.loadVehiclePins(mMap,vehicleArrayList,markerArrayList);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker.getTag() != null ){
+                    // Populates popup layer
+                    Vehicle vehicle = (Vehicle)marker.getTag();
+                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
+                    popupLayer.setVisibility(View.VISIBLE);
+                }
+                return true; //suppresses default behavior. false uses default.
+            }
+        });
     }
+
+    public void loadVehiclePins(GoogleMap googleMap, ArrayList<Vehicle> vehicleArrayList, ArrayList<Marker> markerArrayList){
+        for(int i = 0; i < vehicleArrayList.size(); i++){
+            LatLng pos = new LatLng( vehicleArrayList.get(i).getLat(), vehicleArrayList.get(i).getLng());
+            String vendor = vehicleArrayList.get(i).getVendor();
+            float color;
+            switch(vendor) {
+                case "bird":
+                    color = birdColor;
+                    break;
+                case "spin":
+                    color = spinColor;
+                    break;
+                case "lime":
+                    color = limeColor;
+                    break;
+                default:
+                    System.out.print("What the fuck");
+                    color = BitmapDescriptorFactory.HUE_VIOLET;
+            }
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(pos)
+                    .icon(BitmapDescriptorFactory
+                            .defaultMarker(color)));
+            marker.setTag(vehicleArrayList.get(i)); //adds vehicle to the marker.
+            markerArrayList.add(marker);
+        }
+    }
+
 
 
 }
