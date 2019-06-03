@@ -79,6 +79,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private FirebaseAuth mAuth;
     private Button gpsButton;
     private Location currentLocation;
+    private Vehicle currVehicle;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -103,8 +104,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
                 if(marker.getTag() != null ){
                     // Populates popup layer
-                    Vehicle vehicle = (Vehicle)marker.getTag();
-                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
+                    currVehicle = (Vehicle)marker.getTag();
+                    serviceLabel.setText((currVehicle.getVendor().substring(0,1).toUpperCase()+currVehicle.getVendor().substring(1)));
                     popupLayer.setVisibility(View.VISIBLE);
                 }
                 return true; //suppresses default behavior. false uses default.
@@ -568,6 +569,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         // Added initializations for Adding pins
         vehicleArrayList = new ArrayList<Vehicle>();
         markerArrayList = new ArrayList<Marker>();
+
         // Added Stuff for popup window
         serviceLabel = findViewById(R.id.popup_service);
         batteryValue = findViewById(R.id.popup_battery_value);
@@ -576,10 +578,50 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         startButton = findViewById(R.id.start_button);
         popupLayer = findViewById(R.id.popup_layer);
         popupLayer.setVisibility(View.INVISIBLE);
-        startButton.setOnClickListener(new View.OnClickListener(){
+
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //implement starting the bird
+                if (currVehicle.getVendor().equals("bird")) {
+                    if (/*bird package exists*/) {
+                        Intent i = new Intent();
+                        i.setAction(Intent.ACTION_VIEW);
+                        i.setClassName("com.xxx.your_package_name",
+                                "com.xxx.your_class_name");
+                        startActivity(i);
+                    } else {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.android.vending");
+                        startActivity(launchIntent);
+                    }
+                }
+                if (currVehicle.getVendor().equals("lime")) {
+                    if (/*lime package exists*/) {
+                        Intent i = new Intent();
+                        i.setAction(Intent.ACTION_VIEW);
+                        i.setClassName("com.xxx.your_package_name",
+                                "com.xxx.your_class_name");
+                        startActivity(i);
+
+                    } else {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.android.vending");
+                        startActivity(launchIntent);
+                    }
+                }
+                if (currVehicle.getVendor().equals("spin")) {
+                    if (/*spin package exists*/) {
+                        Intent i = new Intent();
+                        i.setAction(Intent.ACTION_VIEW);
+                        i.setClassName("com.xxx.your_package_name",
+                                "com.xxx.your_class_name");
+                        startActivity(i);
+
+                    } else {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.android.vending");
+                        startActivity(launchIntent);
+                    }
+                }
+
             }
         });
         closeButton = findViewById(R.id.close_button);
