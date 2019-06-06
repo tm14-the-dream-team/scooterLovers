@@ -74,6 +74,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private ToggleButton birdFilter;
     private ToggleButton limeFilter;
     private ToggleButton spinFilter;
+
     //slider initialize maxPrice
     private ToggleButton bikeFilter;
     private ToggleButton scooFilter;
@@ -98,12 +99,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     //vars
     private Boolean mLocationPermissionsGranted = false;
-
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
     //marker implementation
     private ArrayList<Vehicle> vehicleArrayList;
     private ArrayList<Marker> markerArrayList;
+
     //popup window implementation
     private TextView serviceLabel;
     private TextView batteryValue;
@@ -116,6 +117,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     private boolean birdOn, limeOn, spinOn, bikeOn, scooterOn;
 
+    /*
+     * This method
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -322,12 +326,15 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-
+        /*
+         * This method will toggle the bird filter boolean and then call the filter function.
+         */
         birdFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 filter(markerArrayList);
             }
         });
+
 
         limeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -517,7 +524,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        //handle services filter
+        // Handle services filter
         // Shows filter menu when pressing the filter Button
         filterButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -587,6 +594,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
+    /*
+     * This method is called when the GoogleMap is ready to be presented. It will call the getDeviceLocation
+     * which will center the camera on the device's location.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
@@ -609,6 +620,11 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         startPrice = findViewById(R.id.popup_start_value);
         startBat = findViewById(R.id.popup_battery_value);
 
+        /*
+         * This method creates a listener for a marker click. The marker click will get the vehicle
+         * that is associated with the marker. It will also open a popup window and populate its
+         * contents with the marker's vehicle information.
+         */
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -813,7 +829,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
-
+    /*
+     * This method gets the current location of the device. It will then move the camera to the
+     * location of the device.
+     */
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
@@ -845,11 +864,19 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    /*
+     * This method moves the camera to the position that is given. It takes a LatLng which is a
+     * latitude and a longitude that corresponds to a location. It also takes a float zoom that
+     * tells you how much to zoom the camera in.
+     */
     private void moveCamera(LatLng latLng, float zoom){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
+    /*
+     * This method initializes the map and puts it on the activity.
+     */
     private void initMap(){
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -857,6 +884,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(Map.this);
     }
 
+    /*
+     *
+     */
     private void getLocationPermission(){
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
@@ -880,6 +910,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    /*
+     *
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult: called.");
@@ -905,6 +938,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
+    /*
+     * This method loads the marker pins and puts them on the map and then adds it to the
+     * markerArrayList. It takes a GoogleMap to put the markers on, an ArrayList<Vehicle> that
+     * holds all of the vehicles to attach to a marker, and a ArrayList<Marker> that will have all
+     * of the markers that are put on the map.
+     */
     public void loadVehiclePins(GoogleMap googleMap, ArrayList<Vehicle> vehicleArrayList, ArrayList<Marker> markerArrayList){
         for(int i = 0; i < vehicleArrayList.size(); i++){
             Vehicle vehicle = vehicleArrayList.get(i);
@@ -936,12 +975,22 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         filter(markerArrayList);
     }
 
+    /*
+     * This method is called to resize the icons of the scooters and bikes. It takes the icon name
+     * which will be referenced to find in the drawable resource folder. It also takes a width and
+     * height to resize the icon to.
+     */
     public Bitmap resizeMapIcons(String iconName, int width, int height){
         Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
 
+    /*
+     * This method runs every time a filter button is tapped. It will check which options are checked
+     * when filtering and decides which vehicles are shown on the map. It takes a ArrayList<Marker>
+     * that holds all of the markers and then decides which markers to show and not.
+     */
     public void filter(ArrayList<Marker> markerArrayList){
         birdOn = birdFilter.isChecked();
         limeOn = limeFilter.isChecked();
