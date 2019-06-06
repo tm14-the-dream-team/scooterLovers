@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -71,6 +72,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private ToggleButton birdFilter;
     private ToggleButton limeFilter;
     private ToggleButton spinFilter;
+
     //slider initialize maxPrice
     private ToggleButton bikeFilter;
     private ToggleButton scooFilter;
@@ -84,15 +86,17 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private TextView startPrice;
     private TextView startBat;
     private TextView minutePrice;
+
+
     private static final String TAG = "MapActivity";
+
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
 
     //vars
     private Boolean mLocationPermissionsGranted = false;
-
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
     //marker implementation
@@ -106,9 +110,13 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private Button startButton;
     private Button closeButton;
     private LinearLayout popupLayer;
+    private Vehicle vehicle;
 
     private boolean birdOn, limeOn, spinOn, bikeOn, scooterOn;
 
+    /*
+     * This method
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -217,7 +225,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-
+        /*
+         * This method will toggle the bird filter boolean and then call the filter function.
+         */
         birdFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 filter(markerArrayList);
@@ -368,7 +378,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        //handle services filter
+        // Handle services filter
         // Shows filter menu when pressing the filter Button
         filterButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -395,6 +405,35 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 //implement starting the bird
+                if (vehicle.getVendor().equals("bird"))
+                {
+                    try {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("co.bird.android");
+                        startActivity(launchIntent);
+                    } catch (Exception e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=co.bird.android")));
+                    }
+                }
+                // implement starting the lime
+                if (vehicle.getVendor().equals("lime"))
+                {
+                    try {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.limebike");
+                        startActivity(launchIntent);
+                    } catch (Exception e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.limebike")));
+                    }
+                }
+                // implement starting the spin
+                if (vehicle.getVendor().equals("spin"))
+                {
+                    try {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("pm.spin");
+                        startActivity(launchIntent);
+                    } catch (Exception e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=pm.spin")));
+                    }
+                }
             }
         });
         closeButton = findViewById(R.id.close_button);
@@ -408,6 +447,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
+    /*
+     * This method is called when the GoogleMap is ready to be presented. It will call the getDeviceLocation
+     * which will center the camera on the device's location.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
@@ -432,6 +475,11 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         final ImageView serviceImg = findViewById(R.id.service_img);
 
+        /*
+         * This method creates a listener for a marker click. The marker click will get the vehicle
+         * that is associated with the marker. It will also open a popup window and populate its
+         * contents with the marker's vehicle information.
+         */
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -439,7 +487,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     servicesLayer.setVisibility(View.INVISIBLE);
                     filterOptionsLayer.setVisibility(View.INVISIBLE);
                     // Populates popup layer
-                    Vehicle vehicle = (Vehicle)marker.getTag();
+                    vehicle = (Vehicle)marker.getTag();
                     String serviceName = (vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1));
                     System.out.println(serviceName);
                     if(serviceName.equals("Lime")){
@@ -475,132 +523,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         network = new BasicNetwork(new HurlStack());
         requestQueue = new RequestQueue(cache,network);
         requestQueue.start();
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-//        Location curr = new Location(currentLocation);
-        //System.out.println(currentLocation.getLatitude());
-        //System.out.println(currentLocation.getLongitude());
-        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        /**
-         * SPIN SETUP
-         */
-        final Spin spin = new Spin();
-        final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("GET RECIEVED FROM SPIN");
-                System.out.println(response.toString());
-                try {
-                    spin.generateVehicles(response);
-                    loadVehiclePins(mMap,(ArrayList<Vehicle>)spin.getVehicles(),markerArrayList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Request success with SPIN");
-                if(response.has("jwt")){
-                    try {
-                        spin.setToken("Bearer " + response.getString("jwt"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                spin.generateVehicleReq(currentLocation,onVehicleResSpin);
-                requestQueue.add(spin.getVehicleReq());
-                System.out.println(response.toString());
-
-            }
-        };
-
-
-        try {
-            spin.generateInitReq(onInitResSpin);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        requestQueue.add(spin.getInitReq());
-
-        /**
-         * BIRD SETUP
-         */
-        final Bird bird = new Bird();
-        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("GET RECIEVED FROM BIRD");
-                System.out.println(response.toString());
-                try {
-                    bird.generateVehicles(response);
-                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Request success with BIRD");
-                if(response.has("expires_at")){
-                    try {
-                        bird.setExpiration(response.getString("expires_at"));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                    System.out.println("Bird gave no expires at");
-                if(response.has("token")){
-                    try {
-                        bird.setToken("Bird "+response.getString("token"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if(response.has("id")){
-                    try {
-                        bird.setId(response.getString("id"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                try {
-                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                requestQueue.add(bird.getVehicleReq());
-                System.out.println(response.toString());
-
-            }
-        };
-
-
-        try {
-            bird.generateInitReq(onInitResBird);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        requestQueue.add(bird.getInitReq());
-
 
         /**
          * ITS LIME TIME...
@@ -648,19 +570,130 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         };
 
+        final Spin spin = new Spin();
+        final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
 
-        //lime.generateInitReq("20",onInitResLime,onInitErrLime);
-        Location temp = new Location("hoo");
-        temp.setLatitude(32.8805);
-        temp.setLongitude(-117.2394);
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM SPIN");
 
-        lime.generateVehicleReq(temp,20,onVehicleResLime);
-        requestQueue.add(lime.getVehicleReq());
+                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
+                requestQueue.add(lime.getVehicleReq());
+                System.out.println(response.toString());
+                try {
+                    spin.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)spin.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with SPIN");
+                if(response.has("jwt")){
+                    try {
+                        spin.setToken("Bearer " + response.getString("jwt"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                spin.generateVehicleReq(currentLocation,onVehicleResSpin);
+                requestQueue.add(spin.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
+
+
+        try {
+            spin.generateInitReq(onInitResSpin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(spin.getInitReq());
+
+        /**
+         * BIRD SETUP
+         */
+        final Bird bird = new Bird();
+        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM BIRD");
+                System.out.println(response.toString());
+                //lime.generateInitReq("20",onInitResLime,onInitErrLime);
+                try {
+                    bird.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                if(response.has("expires_at")){
+                    try {
+                        bird.setExpiration(response.getString("expires_at"));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    System.out.println("Bird gave no expires at");
+                if(response.has("token")){
+                    try {
+                        bird.setToken("Bird "+response.getString("token"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(response.has("id")){
+                    try {
+                        bird.setId(response.getString("id"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                requestQueue.add(bird.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
+
+
+        try {
+            bird.generateInitReq(onInitResBird);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(bird.getInitReq());
+
+
+
 
 
     }
 
-
+    /*
+     * This method gets the current location of the device. It will then move the camera to the
+     * location of the device.
+     */
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
@@ -692,11 +725,19 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    /*
+     * This method moves the camera to the position that is given. It takes a LatLng which is a
+     * latitude and a longitude that corresponds to a location. It also takes a float zoom that
+     * tells you how much to zoom the camera in.
+     */
     private void moveCamera(LatLng latLng, float zoom){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
+    /*
+     * This method initializes the map and puts it on the activity.
+     */
     private void initMap(){
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -704,6 +745,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(Map.this);
     }
 
+    /*
+     *
+     */
     private void getLocationPermission(){
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
@@ -711,22 +755,31 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            Log.d(TAG, "getLocationPermission: granted 1");
             if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                    COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 mLocationPermissionsGranted = true;
+                Log.d(TAG, "getLocationPermission: granted 2");
                 initMap();
             }else{
                 ActivityCompat.requestPermissions(this,
                         permissions,
                         LOCATION_PERMISSION_REQUEST_CODE);
+                Log.d(TAG, "getLocationPermission: failed 2");
+
             }
         }else{
             ActivityCompat.requestPermissions(this,
                     permissions,
                     LOCATION_PERMISSION_REQUEST_CODE);
+            Log.d(TAG, "getLocationPermission: failed 1");
+
         }
     }
 
+    /*
+     *
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult: called.");
@@ -738,7 +791,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     for(int i = 0; i < grantResults.length; i++){
                         if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
                             mLocationPermissionsGranted = false;
-                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
+                            Log.d(TAG, "onRequestPermissionsResult: permission failed " + i + " " + grantResults[i] + " " + PackageManager.PERMISSION_GRANTED);
                             return;
                         }
                     }
@@ -752,6 +805,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
+    /*
+     * This method loads the marker pins and puts them on the map and then adds it to the
+     * markerArrayList. It takes a GoogleMap to put the markers on, an ArrayList<Vehicle> that
+     * holds all of the vehicles to attach to a marker, and a ArrayList<Marker> that will have all
+     * of the markers that are put on the map.
+     */
     public void loadVehiclePins(GoogleMap googleMap, ArrayList<Vehicle> vehicleArrayList, ArrayList<Marker> markerArrayList){
         for(int i = 0; i < vehicleArrayList.size(); i++){
             Vehicle vehicle = vehicleArrayList.get(i);
@@ -783,12 +842,22 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         filter(markerArrayList);
     }
 
+    /*
+     * This method is called to resize the icons of the scooters and bikes. It takes the icon name
+     * which will be referenced to find in the drawable resource folder. It also takes a width and
+     * height to resize the icon to.
+     */
     public Bitmap resizeMapIcons(String iconName, int width, int height){
         Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
 
+    /*
+     * This method runs every time a filter button is tapped. It will check which options are checked
+     * when filtering and decides which vehicles are shown on the map. It takes a ArrayList<Marker>
+     * that holds all of the markers and then decides which markers to show and not.
+     */
     public void filter(ArrayList<Marker> markerArrayList){
         birdOn = birdFilter.isChecked();
         limeOn = limeFilter.isChecked();
