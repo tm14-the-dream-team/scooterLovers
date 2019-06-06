@@ -614,120 +614,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
         System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
         System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-        /**
-         * SPIN SETUP
-         */
-        final Spin spin = new Spin();
-        final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("GET RECIEVED FROM SPIN");
-                System.out.println(response.toString());
-                try {
-                    spin.generateVehicles(response);
-                    loadVehiclePins(mMap,(ArrayList<Vehicle>)spin.getVehicles(),markerArrayList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Request success with SPIN");
-                if(response.has("jwt")){
-                    try {
-                        spin.setToken("Bearer " + response.getString("jwt"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                spin.generateVehicleReq(currentLocation,onVehicleResSpin);
-                requestQueue.add(spin.getVehicleReq());
-                System.out.println(response.toString());
-
-            }
-        };
-
-
-        try {
-            spin.generateInitReq(onInitResSpin);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        requestQueue.add(spin.getInitReq());
-
-        /**
-         * BIRD SETUP
-         */
-        final Bird bird = new Bird();
-        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("GET RECIEVED FROM BIRD");
-                System.out.println(response.toString());
-                try {
-                    bird.generateVehicles(response);
-                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Request success with BIRD");
-                if(response.has("expires_at")){
-                    try {
-                        bird.setExpiration(response.getString("expires_at"));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                    System.out.println("Bird gave no expires at");
-                if(response.has("token")){
-                    try {
-                        bird.setToken("Bird "+response.getString("token"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if(response.has("id")){
-                    try {
-                        bird.setId(response.getString("id"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                try {
-                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                requestQueue.add(bird.getVehicleReq());
-                System.out.println(response.toString());
-
-            }
-        };
-
-
-        try {
-            bird.generateInitReq(onInitResBird);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        requestQueue.add(bird.getInitReq());
-
 
         /**
          * ITS LIME TIME...
@@ -775,14 +661,122 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         };
 
+        final Spin spin = new Spin();
+        final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
 
-        //lime.generateInitReq("20",onInitResLime,onInitErrLime);
-        Location temp = new Location("hoo");
-        temp.setLatitude(32.8805);
-        temp.setLongitude(-117.2394);
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM SPIN");
 
-        lime.generateVehicleReq(temp,20,onVehicleResLime);
-        requestQueue.add(lime.getVehicleReq());
+                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
+                requestQueue.add(lime.getVehicleReq());
+                System.out.println(response.toString());
+                try {
+                    spin.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)spin.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Request success with SPIN");
+                if(response.has("jwt")){
+                    try {
+                        spin.setToken("Bearer " + response.getString("jwt"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                spin.generateVehicleReq(currentLocation,onVehicleResSpin);
+                requestQueue.add(spin.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
+
+
+        try {
+            spin.generateInitReq(onInitResSpin);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(spin.getInitReq());
+
+        /**
+         * BIRD SETUP
+         */
+        final Bird bird = new Bird();
+        final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED FROM BIRD");
+                System.out.println(response.toString());
+                //lime.generateInitReq("20",onInitResLime,onInitErrLime);
+                try {
+                    bird.generateVehicles(response);
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                if(response.has("expires_at")){
+                    try {
+                        bird.setExpiration(response.getString("expires_at"));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                    System.out.println("Bird gave no expires at");
+                if(response.has("token")){
+                    try {
+                        bird.setToken("Bird "+response.getString("token"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(response.has("id")){
+                    try {
+                        bird.setId(response.getString("id"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    bird.generateVehicleReq(currentLocation, 1000,onVehicleResBird);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                requestQueue.add(bird.getVehicleReq());
+                System.out.println(response.toString());
+
+            }
+        };
+
+
+        try {
+            bird.generateInitReq(onInitResBird);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        requestQueue.add(bird.getInitReq());
+
+
+
 
 
     }
