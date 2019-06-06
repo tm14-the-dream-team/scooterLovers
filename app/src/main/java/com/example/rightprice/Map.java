@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,13 +68,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private ImageButton settingsButton;
     private ImageButton filterButton;
-    private ToggleButton birdButton;
-    private ToggleButton limeButton;
-    private ToggleButton spinButton;
     private ToggleButton birdFilter;
     private ToggleButton limeFilter;
     private ToggleButton spinFilter;
-
     //slider initialize maxPrice
     private ToggleButton bikeFilter;
     private ToggleButton scooFilter;
@@ -88,10 +84,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private TextView startPrice;
     private TextView startBat;
     private TextView minutePrice;
-
-
     private static final String TAG = "MapActivity";
-
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
@@ -99,12 +92,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     //vars
     private Boolean mLocationPermissionsGranted = false;
+
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
     //marker implementation
     private ArrayList<Vehicle> vehicleArrayList;
     private ArrayList<Marker> markerArrayList;
-
     //popup window implementation
     private TextView serviceLabel;
     private TextView batteryValue;
@@ -113,13 +106,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private Button startButton;
     private Button closeButton;
     private LinearLayout popupLayer;
-    private Vehicle currVehicle;
 
     private boolean birdOn, limeOn, spinOn, bikeOn, scooterOn;
 
-    /*
-     * This method
-     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,105 +130,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         settingsButton = (ImageButton) findViewById(R.id.settings_button);
         filterButton = (ImageButton) findViewById(R.id.filter_button);
 
-        //check saved settings
-        birdButton = findViewById(R.id.bird_toggle);
-        DocumentReference birdSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Bird");
 
-        birdSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    try {
-                        if (documentSnapshot.getBoolean("birdAdded"))
-                            birdButton.toggle();
-                    } catch (Exception e){
-                        Toast.makeText(Map.this, "Please create a new account." ,
-                                Toast.LENGTH_SHORT).show();
-                        FirebaseAuth.getInstance().signOut();
-
-                        startActivity(new Intent(Map.this, MainActivity.class));
-                        finish();
-
-                    }
-                } else {
-                    System.err.println("No such document!");
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w("getCurrSettings", "getCurrSettings:failure", e);
-                Toast.makeText(Map.this, "failed to get settings.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        limeButton = findViewById(R.id.lime_toggle);
-        DocumentReference limeSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Lime");
-
-        limeSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    try {
-                        if (documentSnapshot.getBoolean("limeAdded"))
-                            limeButton.toggle();
-                    } catch (Exception e){
-                        Toast.makeText(Map.this, "Please create a new account." ,
-                                Toast.LENGTH_SHORT).show();
-                        FirebaseAuth.getInstance().signOut();
-
-                        startActivity(new Intent(Map.this, MainActivity.class));
-                        finish();
-
-                    }
-                } else {
-                    System.err.println("No such document!");
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w("getCurrSettings", "getCurrSettings:failure", e);
-                Toast.makeText(Map.this, "failed to get settings.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        spinButton = findViewById(R.id.spin_toggle);
-        DocumentReference spinSettingRef = db.collection("Users").document(user.getUid()).collection("Services").document("Spin");
-
-        spinSettingRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    try {
-                        if (documentSnapshot.getBoolean("spinAdded"))
-                            spinButton.toggle();
-                    } catch (Exception e){
-                        Toast.makeText(Map.this, "Please create a new account." ,
-                                Toast.LENGTH_SHORT).show();
-                        FirebaseAuth.getInstance().signOut();
-
-                        startActivity(new Intent(Map.this, MainActivity.class));
-                        finish();
-
-                    }
-                } else {
-                    System.err.println("No such document!");
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w("getCurrSettings", "getCurrSettings:failure", e);
-                Toast.makeText(Map.this, "failed to get settings.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
         //start of button initialization
 
         birdFilter = findViewById(R.id.vehicle_bird_toggle);
@@ -326,15 +217,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        /*
-         * This method will toggle the bird filter boolean and then call the filter function.
-         */
+
         birdFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 filter(markerArrayList);
             }
         });
-
 
         limeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -380,50 +268,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             public void onClick(View v){
                 Intent forgotPassView = new Intent(Map.this, ForgotPassActivity.class);
                 startActivity(forgotPassView);
-            }
-        });
-
-
-        //add or delete bird
-        birdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                //handle bird login
-                HashMap<String, Object> Bird = new HashMap<>();
-                if(birdButton.isChecked()) {
-                    Bird.put("birdAdded", true);
-                    Bird.put("birdEmail", userUID + "@ucsd.com");
-                } else {
-                    Bird.put("birdAdded", false);
-                    Bird.put("birdEmail", userUID + "@ucsd.com");
-                }
-                userDocRef.collection("Services").document("Bird").set(Bird);
-            }
-        });
-        //add or delete lime
-        limeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                HashMap<String, Object> Lime = new HashMap<>();
-                if(limeButton.isChecked()) {
-                    Lime.put("limeAdded", true);
-                } else {
-                    Lime.put("limeAdded", false);
-                }
-                userDocRef.collection("Services").document("Lime").set(Lime);
-            }
-        });
-        //add or delete spin
-        spinButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                HashMap<String, Object> Spin = new HashMap<>();
-                if(spinButton.isChecked()) {
-                    Spin.put("spinAdded", true);
-                } else {
-                    Spin.put("spinAdded", false);
-                }
-                userDocRef.collection("Services").document("Spin").set(Spin);
             }
         });
 
@@ -524,7 +368,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        // Handle services filter
+        //handle services filter
         // Shows filter menu when pressing the filter Button
         filterButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -542,7 +386,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         vehicleArrayList = new ArrayList<Vehicle>();
         markerArrayList = new ArrayList<Marker>();
         // Added Stuff for popup window
-        serviceLabel = findViewById(R.id.popup_service);
         batteryValue = findViewById(R.id.popup_battery_value);
         startValue = findViewById(R.id.popup_start_value);
         startButton = findViewById(R.id.start_button);
@@ -552,35 +395,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 //implement starting the bird
-                if (currVehicle.getVendor() == "bird")
-                {
-                    try {
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("co.bird.android");
-                        startActivity(launchIntent);
-                    } catch (Exception e) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=co.bird.android")));
-                    }
-                }
-                // implement starting the lime
-                if (currVehicle.getVendor() == "lime")
-                {
-                    try {
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.limebike");
-                        startActivity(launchIntent);
-                    } catch (Exception e) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.limebike")));
-                    }
-                }
-                // implement starting the spin
-                if (currVehicle.getVendor() == "spin")
-                {
-                    try {
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("pm.spin");
-                        startActivity(launchIntent);
-                    } catch (Exception e) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=pm.spin")));
-                    }
-                }
             }
         });
         closeButton = findViewById(R.id.close_button);
@@ -594,10 +408,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
-    /*
-     * This method is called when the GoogleMap is ready to be presented. It will call the getDeviceLocation
-     * which will center the camera on the device's location.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
@@ -620,19 +430,25 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         startPrice = findViewById(R.id.popup_start_value);
         startBat = findViewById(R.id.popup_battery_value);
 
-        /*
-         * This method creates a listener for a marker click. The marker click will get the vehicle
-         * that is associated with the marker. It will also open a popup window and populate its
-         * contents with the marker's vehicle information.
-         */
+        final ImageView serviceImg = findViewById(R.id.service_img);
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 if(marker.getTag() != null ){
+                    servicesLayer.setVisibility(View.INVISIBLE);
+                    filterOptionsLayer.setVisibility(View.INVISIBLE);
                     // Populates popup layer
                     Vehicle vehicle = (Vehicle)marker.getTag();
-                    currVehicle = (Vehicle)marker.getTag();
-                    serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
+                    String serviceName = (vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1));
+                    System.out.println(serviceName);
+                    if(serviceName.equals("Lime")){
+                        serviceImg.setImageResource(R.drawable.lime_logo);
+                    } else if (serviceName.equals("Bird")){
+                        serviceImg.setImageResource(R.drawable.bird_logo);
+                    } else {
+                        serviceImg.setImageResource(R.drawable.spin_logo);
+                    }
                     popupLayer.setVisibility(View.VISIBLE);
                     startPrice.setText("$" + vehicle.getPrice().substring(1));
                     if(vehicle.getBattery() == -1){
@@ -644,6 +460,15 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 return true; //suppresses default behavior. false uses default.
             }
+        });
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            public void onMapClick(LatLng l){
+                popupLayer.setVisibility(View.INVISIBLE);
+                servicesLayer.setVisibility(View.INVISIBLE);
+                filterOptionsLayer.setVisibility(View.INVISIBLE);
+            }
+
         });
 
         cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);
@@ -662,62 +487,15 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
         System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
         System.out.println("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo");
-
         /**
-         * ITS LIME TIME...
-         *
+         * SPIN SETUP
          */
-
-        final Lime lime = new Lime();
-        final Response.Listener<JSONObject> onVehicleResLime = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Limes got.. success");
-                System.out.println(response.toString());
-                System.out.println("Its LIMETIME $$Scooooooot..$$");
-
-                try {
-                    lime.generateVehicles(response);
-
-                    loadVehiclePins(mMap,(ArrayList<Vehicle>)lime.getVehicles(),markerArrayList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-
-        Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //bad request or something
-                System.out.println("Error Request when constructing Lime()");
-                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
-                requestQueue.add(lime.getVehicleReq());
-
-            }
-        };
-
-
-        Response.Listener<JSONObject> onInitResLime = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("GET RECIEVED from Lime");
-                System.out.println(response.toString());
-            }
-        };
-
         final Spin spin = new Spin();
         final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
                 System.out.println("GET RECIEVED FROM SPIN");
-
-                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
-                requestQueue.add(lime.getVehicleReq());
                 System.out.println(response.toString());
                 try {
                     spin.generateVehicles(response);
@@ -765,7 +543,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             public void onResponse(JSONObject response) {
                 System.out.println("GET RECIEVED FROM BIRD");
                 System.out.println(response.toString());
-                //lime.generateInitReq("20",onInitResLime,onInitErrLime);
                 try {
                     bird.generateVehicles(response);
                     loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
@@ -779,6 +556,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                System.out.println("Request success with BIRD");
                 if(response.has("expires_at")){
                     try {
                         bird.setExpiration(response.getString("expires_at"));
@@ -824,15 +602,65 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         requestQueue.add(bird.getInitReq());
 
 
+        /**
+         * ITS LIME TIME...
+         *
+         */
 
+        final Lime lime = new Lime();
+        final Response.Listener<JSONObject> onVehicleResLime = new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("Limes got.. success");
+                System.out.println(response.toString());
+                System.out.println("Its LIMETIME $$Scooooooot..$$");
+
+                try {
+                    lime.generateVehicles(response);
+
+                    loadVehiclePins(mMap,(ArrayList<Vehicle>)lime.getVehicles(),markerArrayList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+
+        Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //bad request or something
+                System.out.println("Error Request when constructing Lime()");
+                lime.generateVehicleReq(currentLocation,20,onVehicleResLime);
+                requestQueue.add(lime.getVehicleReq());
+
+            }
+        };
+
+
+        Response.Listener<JSONObject> onInitResLime = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                System.out.println("GET RECIEVED from Lime");
+                System.out.println(response.toString());
+            }
+        };
+
+
+        //lime.generateInitReq("20",onInitResLime,onInitErrLime);
+        Location temp = new Location("hoo");
+        temp.setLatitude(32.8805);
+        temp.setLongitude(-117.2394);
+
+        lime.generateVehicleReq(temp,20,onVehicleResLime);
+        requestQueue.add(lime.getVehicleReq());
 
 
     }
 
-    /*
-     * This method gets the current location of the device. It will then move the camera to the
-     * location of the device.
-     */
+
     private void getDeviceLocation(){
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
@@ -864,19 +692,11 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    /*
-     * This method moves the camera to the position that is given. It takes a LatLng which is a
-     * latitude and a longitude that corresponds to a location. It also takes a float zoom that
-     * tells you how much to zoom the camera in.
-     */
     private void moveCamera(LatLng latLng, float zoom){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
-    /*
-     * This method initializes the map and puts it on the activity.
-     */
     private void initMap(){
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -884,9 +704,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(Map.this);
     }
 
-    /*
-     *
-     */
     private void getLocationPermission(){
         Log.d(TAG, "getLocationPermission: getting location permissions");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
@@ -910,9 +727,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    /*
-     *
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult: called.");
@@ -938,12 +752,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
-    /*
-     * This method loads the marker pins and puts them on the map and then adds it to the
-     * markerArrayList. It takes a GoogleMap to put the markers on, an ArrayList<Vehicle> that
-     * holds all of the vehicles to attach to a marker, and a ArrayList<Marker> that will have all
-     * of the markers that are put on the map.
-     */
     public void loadVehiclePins(GoogleMap googleMap, ArrayList<Vehicle> vehicleArrayList, ArrayList<Marker> markerArrayList){
         for(int i = 0; i < vehicleArrayList.size(); i++){
             Vehicle vehicle = vehicleArrayList.get(i);
@@ -975,22 +783,12 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         filter(markerArrayList);
     }
 
-    /*
-     * This method is called to resize the icons of the scooters and bikes. It takes the icon name
-     * which will be referenced to find in the drawable resource folder. It also takes a width and
-     * height to resize the icon to.
-     */
     public Bitmap resizeMapIcons(String iconName, int width, int height){
         Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
         return resizedBitmap;
     }
 
-    /*
-     * This method runs every time a filter button is tapped. It will check which options are checked
-     * when filtering and decides which vehicles are shown on the map. It takes a ArrayList<Marker>
-     * that holds all of the markers and then decides which markers to show and not.
-     */
     public void filter(ArrayList<Marker> markerArrayList){
         birdOn = birdFilter.isChecked();
         limeOn = limeFilter.isChecked();
@@ -1036,4 +834,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    protected void launchSettings(View v){
+        Intent services = new Intent(this, ServiceActivity.class);
+        startActivity(services);
+    }
 }
