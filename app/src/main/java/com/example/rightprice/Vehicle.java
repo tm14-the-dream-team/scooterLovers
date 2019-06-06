@@ -45,6 +45,10 @@ class Vehicle {
         private int battery;
         private String price;
 
+
+        /*
+        This method was mainly for sys.out testing
+         */
         public String toString(){
                 return "Vendor: "+vendor+", id: "+id+", location: ("+lat+","+lng+"), battery: "+battery+" Price: "+price;
         }
