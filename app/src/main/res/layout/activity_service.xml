@@ -20,15 +20,12 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <TextView
-                android:id="@+id/lime_text"
-                android:layout_width="120dp"
+            <ImageView
+                android:id="@+id/lime_logo"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/lime_text"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_weight="2"
+                app:srcCompat="@drawable/lime_logo" />
 
             <ToggleButton
                 android:id="@+id/lime_toggle"
@@ -51,15 +48,12 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <TextView
-                android:id="@+id/bird_text"
-                android:layout_width="120dp"
+            <ImageView
+                android:id="@+id/bird_logo"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/bird_text"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_weight="2"
+                app:srcCompat="@drawable/bird_logo" />
 
             <ToggleButton
                 android:id="@+id/bird_toggle"
@@ -83,15 +77,12 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <TextView
-                android:id="@+id/spin_text"
-                android:layout_width="120dp"
+            <ImageView
+                android:id="@+id/spin_logo"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/spin_text"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_weight="2"
+                app:srcCompat="@drawable/spin_logo" />
 
             <ToggleButton
                 android:id="@+id/spin_toggle"
