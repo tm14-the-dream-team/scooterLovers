@@ -32,6 +32,15 @@ public class RegistrationActivity extends AppCompatActivity {
     private TextView userLogin;
     private FirebaseAuth mAuth;
 
+
+    /*
+    This method handles the launching of the registration activity.
+    The user is prompted to enter an email and their password twice. if the passwords dont math then there is an
+    error message displayed to the user. Once the user enters their information Firebase handles the storing of
+    account information safely and also sets all their preferences to default filter settings, and they are updated
+    and saved as the user uses the app.
+
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

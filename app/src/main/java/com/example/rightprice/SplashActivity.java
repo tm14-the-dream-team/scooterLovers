@@ -7,6 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
+
+
+    /*
+    This method is the first activity in our application
+    It displays our app logo, and then launches our login activity
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

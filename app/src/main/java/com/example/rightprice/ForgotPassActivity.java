@@ -20,6 +20,9 @@ public class ForgotPassActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     Button nextBtn, backBtn;
 
+    /*
+    This method handles the creation of the forgot password interface
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +47,10 @@ public class ForgotPassActivity extends AppCompatActivity {
 
     }
 
+    /*
+    this method sends a new temporary passcode to the user's email for a user to reset their account with if they
+    forget their password
+     */
     protected void sendEmail() {
         EditText emailText = (EditText) findViewById(R.id.userEmail);
         String email = emailText.getText().toString();
