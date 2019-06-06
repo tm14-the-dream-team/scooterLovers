@@ -112,6 +112,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private Button closeButton;
     private LinearLayout popupLayer;
 
+    private boolean birdOn, limeOn, spinOn, bikeOn, scooterOn;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -235,41 +237,10 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         //start of button initialization
 
         birdFilter = findViewById(R.id.vehicle_bird_toggle);
-        birdFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled
-                    filterByService(markerArrayList,"bird",false);
-                } else {
-                    // The toggle is disabled
-                    filterByService(markerArrayList,"bird",true);
-                }
-            }
-        });
         limeFilter = findViewById(R.id.vehicle_lime_toggle);
-        limeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled
-                    filterByService(markerArrayList,"lime",false);
-                } else {
-                    // The toggle is disabled
-                    filterByService(markerArrayList,"lime",true);
-                }
-            }
-        });
         spinFilter = findViewById(R.id.vehicle_spin_toggle);
-        spinFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled
-                    filterByService(markerArrayList,"spin",false);
-                } else {
-                    // The toggle is disabled
-                    filterByService(markerArrayList,"spin",true);
-                }
-            }
-        });
+        bikeFilter = findViewById(R.id.service_bike_toggle);
+        scooFilter = findViewById(R.id.service_scooter_toggle);
 
         DocumentReference filtersRef = db.collection("Users").document(user.getUid());
         filtersRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -335,6 +306,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                         startActivity(new Intent(Map.this, MainActivity.class));
                         finish();
                     }
+
                 } else {
                     System.err.println("No such document!");
                 }
@@ -349,29 +321,36 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         });
 
 
-        //maxPrice find
-        bikeFilter = findViewById(R.id.service_bike_toggle);
-        bikeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        birdFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled
-                    filterByVehicle(markerArrayList,"bicycle",false);
-                } else {
-                    // The toggle is disabled
-                    filterByVehicle(markerArrayList,"bicycle",true);
-                }
+                filter(markerArrayList);
             }
         });
-        scooFilter = findViewById(R.id.service_scooter_toggle);
+
+        limeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                filter(markerArrayList);
+            }
+        });
+
+        spinFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                filter(markerArrayList);
+            }
+        });
+
+        //maxPrice find
+
+        bikeFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                filter(markerArrayList);
+            }
+        });
+
         scooFilter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled
-                    filterByVehicle(markerArrayList,"scooter",false);
-                } else {
-                    // The toggle is disabled
-                    filterByVehicle(markerArrayList,"scooter",true);
-                }
+                // The toggle is enabled
+                filter(markerArrayList);
             }
         });
 
@@ -516,6 +495,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
+
         servicesLayer = (LinearLayout) findViewById(R.id.services_layer);
         servicesLayer.setVisibility(View.INVISIBLE);
 
@@ -572,6 +552,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 popupLayer.setVisibility(View.INVISIBLE);
             }
         });
+
+
     }
 
     @Override
@@ -609,7 +591,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                         startBat.setVisibility(View.INVISIBLE);
                     } else {
                         startBat.setVisibility(View.VISIBLE);
-                        startBat.setText("Battery: " + String.valueOf(vehicle.getBattery()));
+                        startBat.setText("Battery: " + String.valueOf(vehicle.getBattery()) + "%");
                     }
                 }
                 return true; //suppresses default behavior. false uses default.
@@ -772,6 +754,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         };
 
+
         Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -924,6 +907,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             marker.setTag(vehicle); //adds vehicle to the marker.
             markerArrayList.add(marker);
         }
+        filter(markerArrayList);
     }
 
     public Bitmap resizeMapIcons(String iconName, int width, int height){
@@ -932,23 +916,48 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         return resizedBitmap;
     }
 
-    public void filterByService(ArrayList<Marker> markerArrayList, String vendor, boolean setAs){
-        for(int i = 0; i < markerArrayList.size(); i++){
-            Marker marker = markerArrayList.get(i);
-            Vehicle vehicle = (Vehicle) marker.getTag();
-            if(vehicle.getVendor().equals(vendor)){
-                marker.setVisible(setAs);
-            }
-        }
-    }
+    public void filter(ArrayList<Marker> markerArrayList){
+        birdOn = birdFilter.isChecked();
+        limeOn = limeFilter.isChecked();
+        spinOn = spinFilter.isChecked();
 
-    public void filterByVehicle(ArrayList<Marker> markerArrayList, String type, boolean setAs){
-        for(int i = 0; i < markerArrayList.size(); i++){
+        scooterOn = scooFilter.isChecked();
+        bikeOn = bikeFilter.isChecked();
+
+        if(!birdOn && !spinOn && !limeOn) {
+            birdOn = true;
+            spinOn = true;
+            limeOn = true;
+        }
+
+        if(!scooterOn && !bikeOn) {
+            scooterOn = true;
+            bikeOn = true;
+        }
+
+        for(int i = 0; i < markerArrayList.size(); i++) {
             Marker marker = markerArrayList.get(i);
             Vehicle vehicle = (Vehicle) marker.getTag();
-            if(vehicle.getType().equals(type)){
-                marker.setVisible(setAs);
+            if (vehicle.getVendor().equals("bird")) {
+                if (vehicle.getType().equals("bicycle")) {
+                    marker.setVisible(bikeOn && birdOn);
+                } else if (vehicle.getType().equals("scooter")) {
+                    marker.setVisible(scooterOn && birdOn);
+                }
+            } else if (vehicle.getVendor().equals("spin")) {
+                if (vehicle.getType().equals("bicycle")) {
+                    marker.setVisible(bikeOn && spinOn);
+                } else if (vehicle.getType().equals("scooter")) {
+                    marker.setVisible(scooterOn && spinOn);
+                }
+            } else if (vehicle.getVendor().equals("lime")) {
+                if (vehicle.getType().equals("bicycle")) {
+                    marker.setVisible(bikeOn && limeOn);
+                } else if (vehicle.getType().equals("scooter")) {
+                    marker.setVisible(scooterOn && limeOn);
+                }
             }
+
         }
     }
 
