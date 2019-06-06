@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -111,6 +112,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private Button startButton;
     private Button closeButton;
     private LinearLayout popupLayer;
+    private Vehicle currVehicle;
 
     private boolean birdOn, limeOn, spinOn, bikeOn, scooterOn;
 
@@ -543,6 +545,35 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 //implement starting the bird
+                if (currVehicle.getVendor() == "bird")
+                {
+                    try {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("co.bird.android");
+                        startActivity(launchIntent);
+                    } catch (Exception e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=co.bird.android")));
+                    }
+                }
+                // implement starting the lime
+                if (currVehicle.getVendor() == "lime")
+                {
+                    try {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.limebike");
+                        startActivity(launchIntent);
+                    } catch (Exception e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.limebike")));
+                    }
+                }
+                // implement starting the spin
+                if (currVehicle.getVendor() == "spin")
+                {
+                    try {
+                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("pm.spin");
+                        startActivity(launchIntent);
+                    } catch (Exception e) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=pm.spin")));
+                    }
+                }
             }
         });
         closeButton = findViewById(R.id.close_button);
@@ -584,6 +615,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                 if(marker.getTag() != null ){
                     // Populates popup layer
                     Vehicle vehicle = (Vehicle)marker.getTag();
+                    currVehicle = (Vehicle)marker.getTag();
                     serviceLabel.setText((vehicle.getVendor().substring(0,1).toUpperCase()+vehicle.getVendor().substring(1)));
                     popupLayer.setVisibility(View.VISIBLE);
                     startPrice.setText("$" + vehicle.getPrice().substring(1));
