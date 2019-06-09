@@ -82,12 +82,6 @@
             android:screenOrientation="portrait">
         </activity>
 
-        <activity
-            android:name=".ServiceActivity"
-            android:label="Add Service"
-            android:screenOrientation="portrait">
-        </activity>
-
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
         </activity>

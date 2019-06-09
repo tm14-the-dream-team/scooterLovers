@@ -80,16 +80,6 @@
                     android:textSize="24sp" />
 
                 <Button
-                    android:id="@+id/services_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0"
-                    android:background="@null"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:onClick="launchSettings"
-                    android:text="SERVICES" />
-
-                <Button
                     android:id="@+id/reset_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -354,6 +344,15 @@
                 android:gravity="center"
                 android:text="Start Ride"
                 android:background="@color/gold"
+                android:foreground="?android:attr/selectableItemBackground"/>
+
+            <Button
+                android:id="@+id/Dir_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Directions"
+                android:background="@color/grey"
                 android:foreground="?android:attr/selectableItemBackground"/>
 
             <Button

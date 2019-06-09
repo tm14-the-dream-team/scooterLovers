@@ -108,11 +108,14 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
     private TextView startValue;
     private TextView minuteValue;
     private Button startButton;
+    private Button DIRButtom;
     private Button closeButton;
     private LinearLayout popupLayer;
     private Vehicle vehicle;
 
     private boolean birdOn, limeOn, spinOn, bikeOn, scooterOn;
+
+    private boolean mapReady = false;
 
     /*
      * This method
@@ -131,9 +134,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         final String userUID = user.getUid();
         final DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
-
-        Toast.makeText(Map.this, user.getUid(),
-                Toast.LENGTH_SHORT).show();
 
         settingsButton = (ImageButton) findViewById(R.id.settings_button);
         filterButton = (ImageButton) findViewById(R.id.filter_button);
@@ -441,19 +441,42 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 popupLayer.setVisibility(View.INVISIBLE);
+                //Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                //        Uri.parse("https://www.google.com/maps/dir/?api=1&destination=" + vehicle.getLat() + "," + vehicle.getLng()+ "&travelmode=walking"));
+                //startActivity(intent);
             }
         });
 
+        DIRButtom = findViewById(R.id.Dir_button);
+        DIRButtom.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                        Uri.parse("https://www.google.com/maps/dir/?api=1&destination=" + vehicle.getLat() + "," + vehicle.getLng()+ "&travelmode=walking"));
+                startActivity(intent);
+            }
+        });
 
     }
 
-    /*
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if(mapReady){
+            Intent reCreate = new Intent(Map.this, Map.class);
+            startActivity(reCreate);
+            finish();
+        }
+
+    }
+
+    /*sdfa
      * This method is called when the GoogleMap is ready to be presented. It will call the getDeviceLocation
      * which will center the camera on the device's location.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         mMap = googleMap;
         mMap.setPadding(0, 160, 0, 0);
@@ -497,6 +520,9 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
                     } else {
                         serviceImg.setImageResource(R.drawable.spin_logo);
                     }
+
+
+
                     popupLayer.setVisibility(View.VISIBLE);
                     startPrice.setText("$" + vehicle.getPrice().substring(1));
                     if(vehicle.getBattery() == -1){
@@ -684,9 +710,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
         requestQueue.add(bird.getInitReq());
 
-
-
-
+        mapReady = true;
 
     }
 
@@ -903,8 +927,4 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    protected void launchSettings(View v){
-        Intent services = new Intent(this, ServiceActivity.class);
-        startActivity(services);
-    }
 }

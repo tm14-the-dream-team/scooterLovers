@@ -76,7 +76,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
                                         //BEGIN INITIALIZING DATABASE
                                         HashMap<String, Object> userFilters = new HashMap<>();
-                                        userFilters.put("priceFilter", false);
                                         userFilters.put("birdFilter", false);
                                         userFilters.put("limeFilter", false);
                                         userFilters.put("spinFilter", false);
