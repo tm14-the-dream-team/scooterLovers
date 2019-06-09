@@ -1,3 +1,8 @@
+/*
+
+
+ */
+
 package com.example.rightprice;
 
 import android.content.Intent;
@@ -69,6 +74,11 @@ public class MainActivity extends AppCompatActivity {
         maxPrice = num;
     }
 
+
+    /*
+    In this method control is passed to this class from the splash screen
+    if the user has already logged in on this device then the app will just go straight to the the map.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -82,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    /*
+    This method sets the content view of the login page. from the login page the user can reset their
+    password if they forgot. They can also register an acoount if they have never created an account with us before.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,11 +104,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+
+    /*
+    This method launches the forgot password activity
+     */
     protected void forgotPass(View view) {
         Intent forgotPassView = new Intent(this, ForgotPassActivity.class);
         startActivity(forgotPassView);
     }
 
+
+    /*
+    This method handles the login of the application. the useres credentials are stored in Firebase
+    and if the login fails the user will be notified with a login failed Toast message
+     */
     protected void login(View view) {
         mAuth = FirebaseAuth.getInstance();
 
@@ -134,12 +158,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
+    This method handles the launch registration activity if the user wishes to create an account with our application
+    User would create an account with us to save their filter preferences
+
+     */
     protected void launchRegistration(View view) {
         System.out.println("LAUNCH REGISTRATION");
         Intent launchRegistration = new Intent(this, RegistrationActivity.class);
         startActivity(launchRegistration);
     }
 
+    /*
+    App will close if back button is pressed at the login screen
+     */
     @Override
     public void onBackPressed() {
         finishAffinity();

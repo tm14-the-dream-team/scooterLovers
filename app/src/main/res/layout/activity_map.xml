@@ -4,13 +4,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <fragment
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".Map" />
+        tools:context="com.example.currentplacedetailsonmap.MapsActivityCurrentPlace" />
 
 
     <LinearLayout
@@ -75,104 +75,19 @@
                     android:layout_marginBottom="20dp"
                     android:background="#006A96"
                     android:gravity="center_horizontal"
-                    android:text="Services"
+                    android:text="Settings"
                     android:textColor="#FFFFFF"
                     android:textSize="24sp" />
 
-                <LinearLayout
-                    android:id="@+id/bird_layer"
+                <Button
+                    android:id="@+id/services_button"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp">
-
-                    <TextView
-                        android:id="@+id/bird_text"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/bird_text"
-                        android:textColor="#000000"
-                        android:textSize="20sp" />
-
-                    <ToggleButton
-                        android:id="@+id/bird_toggle"
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/check"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        android:textOff=""
-                        android:textOn=""
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/lime_layer"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp">
-
-                    <TextView
-                        android:id="@+id/lime_text"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/lime_text"
-                        android:textColor="#000000"
-                        android:textSize="20sp" />
-
-                    <ToggleButton
-                        android:id="@+id/lime_toggle"
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/check"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        android:textOff=""
-                        android:textOn=""
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/spin_layer"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp">
-
-                    <TextView
-                        android:id="@+id/spin_text"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/spin_text"
-                        android:textColor="#000000"
-                        android:textSize="20sp" />
-
-                    <ToggleButton
-                        android:id="@+id/spin_toggle"
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/check"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        android:textOff=""
-                        android:textOn=""
-                        android:textSize="14sp" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:background="@null"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:onClick="launchSettings"
+                    android:text="SERVICES" />
 
                 <Button
                     android:id="@+id/reset_button"
@@ -182,7 +97,6 @@
                     android:background="@null"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:text="RESET PASSWORD" />
-
 
                 <Button
                     android:id="@+id/logout_button"
@@ -261,20 +175,28 @@
 
                         <ToggleButton
                             android:id="@+id/vehicle_bird_toggle"
+                            style="?android:attr/borderlessButtonStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
                             android:layout_weight="1"
+                            android:background="@drawable/button_round"
                             android:textOff="@string/bird_text"
                             android:textOn="@string/bird_text"
                             android:textSize="14sp" />
 
+
                         <ToggleButton
                             android:id="@+id/vehicle_lime_toggle"
+                            style="?android:attr/borderlessButtonStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
+                            android:layout_marginBottom="10dp"
                             android:layout_weight="1"
+                            android:background="@drawable/button_round"
                             android:textOff="@string/lime_text"
                             android:textOn="@string/lime_text"
                             android:textSize="14sp" />
@@ -287,7 +209,9 @@
                             android:layout_weight="1"
                             android:textOff="@string/spin_text"
                             android:textOn="@string/spin_text"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:background="@drawable/button_round"
+                            style="?android:attr/borderlessButtonStyle"/>
 
 
                     </LinearLayout>
@@ -314,10 +238,14 @@
 
                         <ToggleButton
                             android:id="@+id/service_bike_toggle"
+                            style="?android:attr/borderlessButtonStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
                             android:layout_weight="1"
+                            android:background="@drawable/button_round"
                             android:textOff="@string/bike_text"
                             android:textOn="@string/bike_text"
                             android:textSize="14sp" />
@@ -330,7 +258,10 @@
                             android:layout_weight="1"
                             android:textOff="@string/scooter_text"
                             android:textOn="@string/scooter_text"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:background="@drawable/button_round"
+                            style="?android:attr/borderlessButtonStyle"/>
+
 
 
                     </LinearLayout>
@@ -356,37 +287,38 @@
         android:gravity="bottom|center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/popup_service"
+        <ImageView
+            android:id="@+id/imageView3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:gravity="bottom|center"
-            android:text="Service"
-            android:textSize="30sp" />
+            android:layout_height="4dp"
+            android:layout_weight="0.2"
+            app:srcCompat="@color/colorPrimary" />
+
+        <ImageView
+            android:id="@+id/service_img"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_weight="0.2"
+            app:srcCompat="@drawable/lime_logo" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/popup_start_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="To Start"
-                android:textSize="16sp" />
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="10dp">
 
             <TextView
                 android:id="@+id/popup_start_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="$5.00"
+                android:gravity="left"
+                android:text="$1.00"
+                android:textColor="#000000"
                 android:textSize="16sp" />
 
             <Space
@@ -395,55 +327,14 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/popup_battery_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Battery"
-                android:textSize="16sp" />
-
-            <TextView
                 android:id="@+id/popup_battery_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
+                android:layout_weight=".5"
+                android:gravity="right"
                 android:text="100%"
+                android:textColor="#000000"
                 android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/popup_info_layer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:gravity="bottom|center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/popup_minute_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Per Minute"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/popup_minute_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="$0.15"
-                android:textSize="16sp" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="5" />
 
         </LinearLayout>
 
@@ -451,7 +342,7 @@
             android:id="@+id/popup_button_layer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -459,17 +350,22 @@
                 android:id="@+id/start_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:text="Start Ride" />
+                android:text="Start Ride"
+                android:background="@color/gold"
+                android:foreground="?android:attr/selectableItemBackground"/>
 
             <Button
                 android:id="@+id/close_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:text="Close" />
+                android:text="Close"
+                android:textColor="#FFFFFF"
+                android:background="@color/colorPrimary"
+                android:foreground="?android:attr/selectableItemBackground"/>
         </LinearLayout>
 
     </LinearLayout>
