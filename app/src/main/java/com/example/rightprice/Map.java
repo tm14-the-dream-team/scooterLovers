@@ -545,6 +545,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         });
 
+
+        //Set up RequestQueue
         cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);
         network = new BasicNetwork(new HurlStack());
         requestQueue = new RequestQueue(cache,network);
@@ -552,7 +554,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         /**
          * ITS LIME TIME...
-         *
+         * Here we will initialize lime and set up all the requets
          */
 
         final Lime lime = new Lime();
@@ -566,7 +568,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
                 try {
                     lime.generateVehicles(response);
-
                     loadVehiclePins(mMap,(ArrayList<Vehicle>)lime.getVehicles(),markerArrayList);
 
                 } catch (JSONException e) {
@@ -575,7 +576,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         };
 
-
+        //If the init goes poorly for lime, this is the callback
         Response.ErrorListener onInitErrLime = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -588,6 +589,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         };
 
 
+        //response for lime initialization
         Response.Listener<JSONObject> onInitResLime = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -597,6 +599,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         };
 
         final Spin spin = new Spin();
+        //Spin vehicle response listener
         final Response.Listener<JSONObject> onVehicleResSpin = new Response.Listener<JSONObject>() {
 
             @Override
@@ -616,17 +619,24 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         };
 
+        /**
+         * SPIN Setup
+         */
+
+        //Callback for Init request for spin
         Response.Listener<JSONObject> onInitResSpin = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 System.out.println("Request success with SPIN");
                 if(response.has("jwt")){
                     try {
+                        //set token for spin
                         spin.setToken("Bearer " + response.getString("jwt"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                //set spin request
                 spin.generateVehicleReq(currentLocation,onVehicleResSpin);
                 requestQueue.add(spin.getVehicleReq());
                 System.out.println(response.toString());
@@ -646,13 +656,13 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
          * BIRD SETUP
          */
         final Bird bird = new Bird();
+        //response listener for bird vehicle request
         final Response.Listener<JSONObject> onVehicleResBird = new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
                 System.out.println("GET RECIEVED FROM BIRD");
                 System.out.println(response.toString());
-                //lime.generateInitReq("20",onInitResLime,onInitErrLime);
                 try {
                     bird.generateVehicles(response);
                     loadVehiclePins(mMap,(ArrayList<Vehicle>)bird.getVehicles(),markerArrayList);
@@ -663,19 +673,11 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         };
 
+
+        //Response listener for Initialiation request for bird
         Response.Listener<JSONObject> onInitResBird = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                if(response.has("expires_at")){
-                    try {
-                        bird.setExpiration(response.getString("expires_at"));
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                    System.out.println("Bird gave no expires at");
                 if(response.has("token")){
                     try {
                         bird.setToken("Bird "+response.getString("token"));

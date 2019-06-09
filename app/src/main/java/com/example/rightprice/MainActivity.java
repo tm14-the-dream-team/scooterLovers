@@ -33,8 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public void birdToggle(){
         birdToggle = !birdToggle;
     }
-
-    public void birdToggle(boolean b){
+public void birdToggle(boolean b){
         birdToggle = b;
     }
 
