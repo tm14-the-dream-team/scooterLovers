@@ -115,6 +115,8 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     private boolean birdOn, limeOn, spinOn, bikeOn, scooterOn;
 
+    private boolean mapReady = false;
+
     /*
      * This method
      */
@@ -132,9 +134,6 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
         final String userUID = user.getUid();
         final DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(userUID);
-
-        Toast.makeText(Map.this, user.getUid(),
-                Toast.LENGTH_SHORT).show();
 
         settingsButton = (ImageButton) findViewById(R.id.settings_button);
         filterButton = (ImageButton) findViewById(R.id.filter_button);
@@ -458,16 +457,26 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
+    }
+
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if(mapReady){
+            Intent reCreate = new Intent(Map.this, Map.class);
+            startActivity(reCreate);
+            finish();
+        }
 
     }
 
-    /*
+    /*sdfa
      * This method is called when the GoogleMap is ready to be presented. It will call the getDeviceLocation
      * which will center the camera on the device's location.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         mMap = googleMap;
         mMap.setPadding(0, 160, 0, 0);
@@ -701,9 +710,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
         requestQueue.add(bird.getInitReq());
 
-
-
-
+        mapReady = true;
 
     }
 
@@ -920,8 +927,4 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    protected void launchSettings(View v){
-        Intent services = new Intent(this, ServiceActivity.class);
-        startActivity(services);
-    }
 }
