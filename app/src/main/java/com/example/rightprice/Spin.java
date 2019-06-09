@@ -17,20 +17,22 @@ import java.util.List;
 import java.util.Map;
 
 
-/**
- * THERE MAY BE AN ISSUE WITH SPIN SCOOTERS.... CHECK THIS TO SEE HOW BATTERY STORED
- */
-
+//Factory for Spin vehicles
 public class Spin {
     public List<Vehicle> getVehicles() {
         return spins;
     }
 
+    //spin vehicles
     private List<Vehicle> spins;
+    //vehicle request for spin
     private JsonObjectRequest vehicleReq;
+    //init request for spin
     private JsonObjectRequest initReq;
+    //token for spin
     private String token;
 
+    //generate the init request for spin..sets token
     public void generateInitReq(Response.Listener<JSONObject> onRes) throws JSONException {
         String url ="https://web.spin.pm/api/v1/auth_tokens";
         JSONObject obj = new JSONObject();
@@ -39,8 +41,8 @@ public class Spin {
         innerObj.put("uid","3fbdb6d9-199f-4038-9c10-b9f85228ac9a");
         obj.put("device",innerObj);
         obj.put("grantType","device");
-        //{"device":{"mobileType":"ios","uid":"3fbdb6d9-199f-4038-9c10-b9f85228ac9a"},"grantType":"device"}
 
+        //listener if the request fails
         Response.ErrorListener onErr = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -50,9 +52,10 @@ public class Spin {
             }
         };
 
+        //init request set
         initReq = new JsonObjectRequest(Request.Method.POST,url,obj,onRes,onErr) {
             /**
-             * Passing some request headers*
+             * add headers
              */
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -64,6 +67,7 @@ public class Spin {
     }
 
 
+    //generate the vehicles from the response from spin
     public void generateVehicles(JSONObject response) throws JSONException {
         System.out.println("I got the spins ...");
         String id;
@@ -98,7 +102,7 @@ public class Spin {
         }
     }
 
-    //https://web.spin.pm/api/v3/vehicles?lng=-117.237552&lat=32.880277&distance=&mode=
+    //generate the vehicle requests for spin
     public void generateVehicleReq(final Location loc,Response.Listener<JSONObject> onRes) {
         String url = "https://web.spin.pm/api/v3/vehicles?";
         url += "lng=" + loc.getLongitude();
@@ -106,6 +110,8 @@ public class Spin {
         url += "&distance=&mode=";
 
         JSONObject obj = new JSONObject();
+
+        //response listner in case spin request goes bad
         Response.ErrorListener onErr = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -118,8 +124,9 @@ public class Spin {
         };
 
 
-        System.out.println("Setting token...."+ token);
+        //set vehicle request
         vehicleReq = new JsonObjectRequest(Request.Method.GET, url, obj, onRes, onErr){
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap headers = new HashMap();
@@ -130,10 +137,8 @@ public class Spin {
     }
 
 
+    //empty constructor.. the requests set all fields  for this factory
     public Spin(){
-        //token = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyVW5pcXVlS2V5IjoiMmU5ZWZhNTY4MTNiOTllZmQ2ODRlM2EwNzZjMjQyZjkiLCJyZWZlcnJhbENvZGUiOm51bGwsImlzQXBwbGVQYXlEZWZhdWx0IjpmYWxzZSwiaXNBZG1pbiI6ZmFsc2UsImlzQ2hhcmdlciI6ZmFsc2UsImlzQ29ycG9yYXRlIjpmYWxzZSwiYXV0b1JlbG9hZCI6ZmFsc2UsImNyZWRpdEJhbGFuY2UiOjAsInRvdGFsVHJpcENvdW50IjowLCJzcGluVW5saW1pdGVkIjpmYWxzZSwic3BpblVubGltaXRlZE5leHRCaWxsaW5nQ3ljbGUiOm51bGwsInNwaW5VbmxpbWl0ZWRNZW1iZXJzaGlwIjpudWxsLCJpc1F1YWxpZmllZEZvclJpZGUiOmZhbHNlLCJyYXRlRGlzY291bnRQZXJjZW50YWdlIjowLCJ0eXBlIjoiZGV2aWNlIiwiZXhwIjoxNTU5NDYwNzUzfQ.jSHcF0BjPuk80JArBPMm1vSrVHAPkDkWkGOP-0lRG7k";
-        // generateVehicleReq(loc);
-        //generateInitReq();
 
 
     }

@@ -21,21 +21,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//Bird Vehicle factory
 public class Bird {
 
-
+    //bird vehicles
     private List<Vehicle>birds;
+    //init request for bird
     private JsonObjectRequest initReq;
 
     public void setToken(String token) {
         this.token = token;
     }
 
+    //token for validation
     private String token;
 
 
     private String id;
-    private String expiration;
     private String email;
     private JsonObjectRequest vehicleReq;
 
@@ -43,13 +45,12 @@ public class Bird {
         this.id = id;
     }
 
-    public void setExpiration(String expiration) {
-        this.expiration = expiration;
+
+
+    public JsonObjectRequest getInitReq() {
+        return initReq;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
     public List<Vehicle> getVehicles() {
         return birds;
@@ -60,18 +61,12 @@ public class Bird {
     }
 
 
-    public String getToken() {
-        return token;
-    }
 
     public String getId() {
         return id;
     }
 
-    public String getExpiration() {
-        return expiration;
-    }
-
+    //create vehicles from request response
     public void generateVehicles(JSONObject resp) throws JSONException {
         birds = new ArrayList<Vehicle>();
         JSONArray items = resp.getJSONArray("birds");
@@ -106,6 +101,7 @@ public class Bird {
 
     }
 
+    //set basic fields for bird request... email does not matter
     public Bird() {
         email = "johnathan@ucsd.com";
         id = "eee4913d-078e-4f13-8bd6-87d3245a3fb0";
@@ -115,6 +111,7 @@ public class Bird {
     }
 
 
+    //generate init request to renew token
     public void generateInitReq(Response.Listener<JSONObject> onRes) throws JSONException {
         JSONObject obj = new JSONObject();
         String url = "https://api.bird.co/user/login";
@@ -144,40 +141,17 @@ public class Bird {
 
     }
 
-    //DON'T USE THIS
-    public Bird(final Location loc) throws JSONException {
-        email ="johnathan@ucsd.com";
-        id="eee4913d-078e-4f13-8bd6-87d3245a3fb0";
-        //token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
-        token="Bird eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBVVRIIiwidXNlcl9pZCI6ImRiN2IwMGIzLWE2NWUtNDQyMy1iZDIzLWZlOGVkZTk3NWNmMyIsImRldmljZV9pZCI6IjQ3OTIwMzZkLWVkNGEtNDQ5OC05ZGJjLTViMjlmZjNmMWVmNSIsImV4cCI6MTU5MDgwMTkxMH0.hmhXizqW64omSvjdbhabdMcJBPECdzq2MVtObov2drs";
-    }
 
+   //generate the vehicle request for bird
     public void generateVehicleReq(final Location point, int radius, Response.Listener<JSONObject> onRes) throws JSONException {
 
-        System.out.println("in vehicle req class");
         String url = "https://api.bird.co/bird/nearby?";
-        System.out.println("IN BIRD GENERATOR");
-        System.out.println("IN BIRD GENERATOR");
-        System.out.println("IN BIRD GENERATOR");
-        System.out.println("IN BIRD GENERATOR");
-        System.out.println("IN BIRD GENERATOR");
-        System.out.println("IN BIRD GENERATOR");
-        System.out.println("IN BIRD GENERATOR");
-        System.out.println("LAT:"+point.getLatitude());
-        System.out.println("LONG:"+point.getLongitude());
-
 
         url+="latitude="+point.getLatitude();
         url+="&longitude="+point.getLongitude();
         url+="&radius="+radius;
-        System.out.println("BIRD UUUURRLLL: "+url);
 
         JSONObject obj = new JSONObject();
-        /*
-        obj.put("latitude",point.getLatitude());
-        obj.put("longitude",point.getLongitude());
-        obj.put("radius",radius);
-        */
 
 
         Response.ErrorListener onErr = new Response.ErrorListener() {
@@ -190,9 +164,10 @@ public class Bird {
 
             }
         };
+        //set vehicle request
         vehicleReq = new JsonObjectRequest(Request.Method.GET,url,obj,onRes,onErr) {
             /**
-             * Passing some request headers*
+             * add headers
              */
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -202,121 +177,18 @@ public class Bird {
                 headers.put("App-Version","3.0.5");
 
                 String locH = "{";
-                /*locH+= "\"latitude\":"+String.format("%.6f",point.getLatitude())+",";
-                locH+= "\"longitude\":"+String.format("%.6f",point.getLongitude())+",";
                 locH+= "\"latitude\":"+point.getLatitude()+",";
                 locH+= "\"longitude\":"+point.getLongitude()+",";
-                locH+= "\"altitude\":"+ 500 + ",";
-                locH+= "\"accuracy\":"+ 100 + ",";
-                locH+= "\"speed\":"+ -1 + ",";
-                locH+= "\"heading\":"+ -1;
-*/
-                //{"latitude":32.888532,
-                locH+= "\"latitude\":"+point.getLatitude()+",";
-                // "longitude":-117.240903,
-                locH+= "\"longitude\":"+point.getLongitude()+",";
-                // "altitude":0,
                 locH+= "\"altitude\":"+ 0 + ",";
-                // "accuracy":100,
                 locH+= "\"accuracy\":"+ 100 + ",";
-                // "speed":-1,
                 locH+= "\"speed\":"+ -1 + ",";
-                // "heading":-1}
                 locH+= "\"heading\":"+ -1;
                 locH+= "}";
 
-                //{"latitude":32.880277,"longitude":-117.237552,"altitude":0,"accuracy":100,"speed":-1,"heading":-1}
-                //{"latitude":32.888532,"longitude":-117.240903,"altitude":0,"accuracy":100,"speed":-1,"heading":-1}
-
-                System.out.println("Here is location: " + locH);
-
                 headers.put("Location",locH);
-                System.out.println("Headers for getBirds: ");
-                System.out.println(headers);
                 return headers;
             }
         };
     }
 
-    public JsonObjectRequest getInitReq() {
-        return initReq;
-    }
-    //idk what this is but i commented it out
-
-
-
-    //DON'T USE
-    /*
-    public Bird(String email, final Location loc) throws JSONException {
-        //first init with bird
-        this.email = email;
-        String url = "https://api.bird.co/user/login";
-        JSONObject obj = new JSONObject();
-        obj.put("email",email);
-        token = "none";
-
-        Response.ErrorListener onErr = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println("Error Request when constructing Bird()");
-                //bad request or something
-
-            }
-        };
-        Response.Listener<JSONObject> onRes = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                System.out.println("Request success");
-                System.out.println(response.toString());
-                System.out.println("$$$$$$$$$$$$$$$$$");
-                if(response.has("token")) {
-                    try {
-                        token =  response.getString("token");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else{
-                   System.out.println("NO TOKEN FROM BIRD");
-                }
-                if (response.has("id")) {
-                    try {
-                        id = response.getString("id");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-                //shouldn't happen
-                else
-                    System.out.println("ERROR -- BIRD REQUEST GAVE NO ID");
-                if(response.has("expires_at")){
-                    try {
-                        expiration = response.getString("expires_at");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                //shouldn't happen
-                else
-                    System.out.println("ERROR -- BIRD REQUEST GAVE NO EXPIRES_AT");
-                try {
-                    generateVehicleReq(loc, 1000);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        initReq = new JsonObjectRequest(Request.Method.POST,url,obj,onRes,onErr){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap headers = new HashMap();
-                headers.put("Content-Type", "application/json");
-                headers.put("Device-id:", "000bca56-fb54-4704-9abe-60efc4d9993c");
-                headers.put("Platform","android");
-                return headers;
-            }
-        };
-    }
-    */
 }
