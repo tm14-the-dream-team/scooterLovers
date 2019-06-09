@@ -9,6 +9,7 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
+    //Constructor to set user attributes
     public User(String username, String email) {
         this.username = username;
         this.email = email;

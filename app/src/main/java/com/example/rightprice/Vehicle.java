@@ -1,5 +1,6 @@
 package com.example.rightprice;
 
+//Class for getting and setting vehicle attributes
 class Vehicle {
         public double getLat() {
                 return lat;
@@ -53,6 +54,7 @@ class Vehicle {
                 return "Vendor: "+vendor+", id: "+id+", location: ("+lat+","+lng+"), battery: "+battery+" Price: "+price;
         }
 
+        //Sets vehicle information
         public Vehicle(String vendor, String id, int battery, double lat, double lng, String price){
                 this.vendor = vendor;
                 this.id = id;

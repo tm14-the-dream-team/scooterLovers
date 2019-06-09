@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+//Class for handling when the user forgets their password
 public class ForgotPassActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     Button nextBtn, backBtn;

@@ -471,7 +471,7 @@ public class Map extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
-    /*sdfa
+    /*
      * This method is called when the GoogleMap is ready to be presented. It will call the getDeviceLocation
      * which will center the camera on the device's location.
      */

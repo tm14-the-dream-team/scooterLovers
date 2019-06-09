@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+//Class for displaying the splash screen when the app starts
 public class SplashActivity extends AppCompatActivity {
 
 
