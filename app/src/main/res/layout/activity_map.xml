@@ -357,6 +357,15 @@
                 android:foreground="?android:attr/selectableItemBackground"/>
 
             <Button
+                android:id="@+id/Dir_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Directions"
+                android:background="@color/grey"
+                android:foreground="?android:attr/selectableItemBackground"/>
+
+            <Button
                 android:id="@+id/close_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
